@@ -117,7 +117,7 @@ describe Nervion::OAuthHeader do
   end
 
   it 'generates the header value for a paticular request' do
-    oauth_headers = stub :oauht_headers, to_s: 'OAuth oauth_params="value"'
+    oauth_headers = stub :oauth_headers, to_s: 'OAuth oauth_params="value"'
     Nervion::OAuthHeader.stub(:new).
       with(http_method, base_url, params).and_return oauth_headers
     request = stub :request, http_method: http_method, uri: base_url, params: params
