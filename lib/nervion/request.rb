@@ -3,22 +3,18 @@ require_relative 'oauth_header'
 
 module Nervion
   class Request
-    attr_reader :uri, :params, :oauth_params
+    attr_reader :http_method, :uri, :params
 
-    def initialize(uri, params = {}, oauth_params = {})
-      @uri, @params, @oauth_params = uri, params, oauth_params
+    def initialize(http_method, uri, params = {})
+      @uri, @http_method, @params = uri, http_method, params
     end
 
     def headers
       { authorization: OAuthHeader.for(self) }
     end
 
-    def get
-      EventMachine::HttpRequest.new(uri).get head: headers
-    end
-
-    def post
-      EventMachine::HttpRequest.new(uri).post head: headers, body: @params
+    def start
+      EventMachine::HttpRequest.new(uri).send http_method, head: headers, query: @params
     end
   end
 end
