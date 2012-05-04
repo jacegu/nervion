@@ -10,10 +10,13 @@ module Nervion
       'keep-alive'      => 'true'
     }
 
-    attr_reader :http_method, :uri, :params
+    attr_reader :http_method, :uri, :params, :oauth_params
 
-    def initialize(http_method, uri, params = {})
-      @uri, @http_method, @params = uri, http_method, params
+    def initialize(http_method, uri, params = {}, oauth_params = {})
+      @uri = uri
+      @http_method = http_method
+      @params = params
+      @oauth_params = oauth_params
     end
 
     def start

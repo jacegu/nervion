@@ -26,6 +26,18 @@ describe Nervion::Request do
     end
   end
 
+  context 'oauth params' do
+    it 'is created with no oauth params by default' do
+      subject.oauth_params.should eq Hash.new
+    end
+
+    it 'can be created with specific oauth params' do
+      oauth_params = { access_token: 'xxxxxxxxxxxx' }
+      request = described_class.new http_method, uri, {}, oauth_params
+      request.oauth_params.should eq oauth_params
+    end
+  end
+
   it 'builds the headers for the request' do
     oauth_header = 'OAuth param="param value"'
     Nervion::OAuthHeader.should_receive(:for).with(subject).
