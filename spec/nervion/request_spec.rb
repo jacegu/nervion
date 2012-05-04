@@ -26,11 +26,20 @@ describe Nervion::Request do
     end
   end
 
-  it 'builds the oauth authorization header' do
+  it 'builds the headers for the request' do
     oauth_header = 'OAuth param="param value"'
     Nervion::OAuthHeader.should_receive(:for).with(subject).
       and_return oauth_header
-    subject.headers.should eq Hash[authorization: oauth_header]
+
+    expected_headers = {
+        'authorization'   => oauth_header,
+        'content-type'    => 'application/x-www-form-urlencoded',
+        'user-agent'      => 'nervion twitter streaming api client',
+        'accept-encoding' => 'deflate, gzip',
+        'keep-alive'      => 'true'
+    }
+
+    subject.headers.should eq expected_headers
   end
 
   context 'streaming' do
