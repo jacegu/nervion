@@ -1,49 +1,37 @@
 require 'nervion/oauth_header'
 
 describe Nervion::OAuthHeader do
-  subject { described_class.new http_method, base_url, params }
+  subject { described_class.new http_method, base_url, params, oauth_params }
 
   let(:http_method)         { 'post' }
   let(:base_url)            { 'https://api.twitter.com/1/statuses/update.json' }
   let(:params)              { Hash[include_entities: true, status: '@patheleven'] }
-  let(:settings)            { Nervion::OAuthSettings }
   let(:consumer_key)        { 'xvz1evFS4wEEPTGEFPHBog' }
   let(:consumer_secret)     { 'kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw' }
   let(:access_token)        { 'GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb' }
   let(:access_token_secret) { 'LswwdoUaIvS8ltyTth4J50vUPVVHtR2YPi5kE' }
-
-  before do
-    settings.stub(:consumer_key).and_return consumer_key
-    settings.stub(:consumer_secret).and_return consumer_secret
-    settings.stub(:access_token).and_return access_token
-    settings.stub(:access_token_secret).and_return access_token_secret
+  let(:oauth_params) do
+    {
+      consumer_key: consumer_key,
+      consumer_secret: consumer_secret,
+      access_token: access_token,
+      access_token_secret: access_token_secret
+    }
   end
 
-  it 'is created with the http method' do
-    subject.http_method.should eq http_method
-  end
-
-  it 'is created with the base URL' do
-    subject.base_url.should eq base_url
-  end
-
-  it 'is created with the params' do
-    subject.params.should eq params
-  end
-
-  it 'takes the consumer key from OAuth settings' do
+  it 'takes the consumer key from oauth params' do
     subject.consumer_key.should be consumer_key
   end
 
-  it 'takes the consumer secret from OAuth settings' do
+  it 'takes the consumer secret from oauth params' do
     subject.consumer_secret.should be consumer_secret
   end
 
-  it 'takes the access token from OAuth settings' do
+  it 'takes the access token from oauth params' do
     subject.token.should be access_token
   end
 
-  it 'takes the access token secret from OAuth settings' do
+  it 'takes the access token secret from oauth params' do
     subject.token_secret.should be access_token_secret
   end
 
@@ -119,8 +107,9 @@ describe Nervion::OAuthHeader do
   it 'generates the header value for a paticular request' do
     oauth_headers = stub :oauth_headers, to_s: 'OAuth oauth_params="value"'
     Nervion::OAuthHeader.stub(:new).
-      with(http_method, base_url, params).and_return oauth_headers
-    request = stub :request, http_method: http_method, uri: base_url, params: params
+      with(http_method, base_url, params, oauth_params).and_return oauth_headers
+    request = stub :request, http_method: http_method, uri: base_url,
+                             params: params, oauth_params: oauth_params
     described_class.for(request).should eq 'OAuth oauth_params="value"'
   end
 end

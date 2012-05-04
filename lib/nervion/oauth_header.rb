@@ -1,21 +1,19 @@
 require 'date'
 require 'digest/md5'
 require_relative 'oauth_signature'
-require_relative 'oauth_settings'
-require_relative  'percent_encoder'
+require_relative 'percent_encoder'
 
 module Nervion
   class OAuthHeader
     include PercentEncoder
 
-    attr_reader :http_method, :base_url, :params
-
     def self.for(request)
-      new(request.http_method, request.uri, request.params).to_s
+      new(request.http_method, request.uri, request.params, request.oauth_params).to_s
     end
 
-    def initialize(http_method, base_url, params)
-      @http_method, @base_url, @params = http_method, base_url, params
+    def initialize(http_method, base_url, params, oauth_params)
+      @http_method, @base_url = http_method, base_url
+      @params, @oauth_params = params, oauth_params
     end
 
     PARAMETERS_INCLUDED = %w{ oauth_consumer_key
@@ -34,19 +32,19 @@ module Nervion
     end
 
     def consumer_key
-      OAuthSettings.consumer_key
+      @oauth_params[:consumer_key]
     end
 
     def consumer_secret
-      OAuthSettings.consumer_secret
+      @oauth_params[:consumer_secret]
     end
 
     def token
-      OAuthSettings.access_token
+      @oauth_params[:access_token]
     end
 
     def token_secret
-      OAuthSettings.access_token_secret
+      @oauth_params[:access_token_secret]
     end
 
     def nonce
@@ -66,7 +64,7 @@ module Nervion
     end
 
     def signature
-      OAuthSignature.for http_method, base_url, params, oauth_info, secrets
+      OAuthSignature.for @http_method, @base_url, @params, oauth_info, secrets
     end
 
     def oauth_info
