@@ -1,5 +1,5 @@
 module Nervion
-  class OAuthSettings
+  class Configuration
     UNCONFIGURED_SETTING = ''
 
     def self.consumer_key=(consumer_key)

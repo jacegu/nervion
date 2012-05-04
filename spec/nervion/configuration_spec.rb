@@ -1,7 +1,7 @@
-require 'nervion/oauth_settings'
+require 'nervion/configuration'
 
-describe Nervion::OAuthSettings do
-  context 'with no configuration' do
+describe Nervion::Configuration do
+  context 'when it has not being configured' do
     it 'has an empty string as consumer_key' do
       described_class.consumer_key.should eq ''
     end
