@@ -1,36 +1,49 @@
 module Nervion
+
+  def self.configure
+    yield Configuration
+  end
+
   class Configuration
     UNCONFIGURED_SETTING = ''
 
-    attr_writer :consumer_key
+    def self.consumer_key=(consumer_key)
+      @consumer_key = consumer_key
+    end
 
-    def consumer_key
+    def self.consumer_key
       @consumer_key || UNCONFIGURED_SETTING
     end
 
-    attr_writer :consumer_secret
+    def self.consumer_secret=(consumer_secret)
+      @consumer_secret = consumer_secret
+    end
 
-    def consumer_secret
+    def self.consumer_secret
       @consumer_secret || UNCONFIGURED_SETTING
     end
 
-    attr_writer :access_token
+    def self.access_token=(access_token)
+      @access_token = access_token
+    end
 
-    def access_token
+    def self.access_token
       @access_token || UNCONFIGURED_SETTING
     end
 
-    attr_writer :access_token_secret
+    def self.access_token_secret=(access_token_secret)
+      @access_token_secret = access_token_secret
+    end
 
-    def access_token_secret
+    def self.access_token_secret
       @access_token_secret || UNCONFIGURED_SETTING
     end
 
-    def [](setting)
+    def self.[](setting)
       fetch setting
     end
 
-    def fetch(setting)
+    def self.fetch(setting)
       send setting.to_sym
     end
   end
