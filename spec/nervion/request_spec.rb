@@ -1,80 +1,48 @@
 require 'nervion/request'
 
-describe Nervion::Request do
-  subject { described_class.new(http_method, uri) }
+=begin
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Nervion Twitter Streaming API Client
+Accept-Encoding: deflate, gzip
+Keep-Alive: true
+=end
 
-  let(:http_method) { :get }
-  let(:uri) { 'https://stream.twitter.com/1/statuses/sample.json' }
+
+EXPECTED_REQUEST = <<REQUEST
+GET /endpoint HTTP/1.1
+Authorization: OAuth xxx
+REQUEST
+
+describe Nervion::Request do
+  subject { described_class.new http_method, uri, params, oauth_params }
+
+  let(:http_method)  { :get }
+  let(:uri)          { 'https://twitter.com/endpoint' }
+  let(:params)       { Hash.new }
+  let(:oauth_params) { Hash[param: 'value'] }
 
   it 'is created with an http method' do
-    subject.http_method.should eq http_method
+    subject.http_method.should eq :get
   end
 
-  it 'is created with an endpoint' do
-    subject.uri.should be uri
+  it 'is created with an uri' do
+    subject.uri.should eq 'https://twitter.com/endpoint'
   end
 
-  context 'params' do
-    it 'is created with no params by default' do
-      subject.params.should eq Hash.new
-    end
-
-    it 'can be created with specific params' do
-      params = { follow: '1,2,3' }
-      request = described_class.new http_method, uri, params
-      request.params.should eq params
-    end
+  it 'is created with http params' do
+    subject.params.should be params
   end
 
-  context 'oauth params' do
-    it 'is created with no oauth params by default' do
-      subject.oauth_params.should eq Hash.new
-    end
-
-    it 'can be created with specific oauth params' do
-      oauth_params = { access_token: 'xxxxxxxxxxxx' }
-      request = described_class.new http_method, uri, {}, oauth_params
-      request.oauth_params.should eq oauth_params
-    end
+  it 'is created with oauth params' do
+    subject.oauth_params.should eq Hash[param: 'value']
   end
 
-  it 'builds the headers for the request' do
-    oauth_header = 'OAuth param="param value"'
-    Nervion::OAuthHeader.should_receive(:for).with(subject).
-      and_return oauth_header
-
-    expected_headers = {
-        'authorization'   => oauth_header,
-        'content-type'    => 'application/x-www-form-urlencoded',
-        'user-agent'      => 'nervion twitter streaming api client',
-        'accept-encoding' => 'deflate, gzip',
-        'keep-alive'      => 'true'
-    }
-
-    subject.headers.should eq expected_headers
+  it 'knows the path it points to' do
+    subject.path.should eq '/endpoint'
   end
 
-  context 'streaming' do
-    let(:headers)    { Hash[authorization: 'OAuth header'] }
-    let(:em_request) { stub :em_request }
-
-    before do
-      subject.stub(:headers).and_return headers
-      EventMachine::HttpRequest.stub(:new).with(uri).and_return em_request
-    end
-
-    it 'triggers GET requests' do
-      em_request.should_receive(:get).with(head: headers, query: {})
-      subject.start
-    end
-
-    it 'triggers POST requests' do
-      params = { follow: '1,2,3' }
-      request = described_class.new('post', uri, params)
-      request.stub(:headers).and_return headers
-      em_request.should_receive(:post).with(head: headers, query: params)
-      request.start
-    end
+  it 'composes the request' do
+    Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
+    subject.request.should eq EXPECTED_REQUEST
   end
-
 end
