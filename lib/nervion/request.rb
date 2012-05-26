@@ -21,7 +21,7 @@ module Nervion
     end
 
     def path
-      @path ||= URI.parse(@uri).path
+      @path ||= URI.parse(@uri).request_uri
     end
 
     def to_s
