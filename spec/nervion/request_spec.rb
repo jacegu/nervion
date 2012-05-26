@@ -9,8 +9,8 @@ Keep-Alive: true
 
 
 EXPECTED_REQUEST = <<REQUEST
-GET /endpoint HTTP/1.1
-Authorization: OAuth xxx
+GET /endpoint HTTP/1.1\r
+Authorization: OAuth xxx\r\n\r
 REQUEST
 
 describe Nervion::Request do
@@ -22,7 +22,7 @@ describe Nervion::Request do
   let(:oauth_params) { Hash[param: 'value'] }
 
   it 'is created with an http method' do
-    subject.http_method.should eq :get
+    subject.http_method.should eq 'GET'
   end
 
   it 'is created with an uri' do
@@ -43,6 +43,6 @@ describe Nervion::Request do
 
   it 'composes the request' do
     Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
-    subject.request.should eq EXPECTED_REQUEST
+    subject.to_s.should eq EXPECTED_REQUEST
   end
 end

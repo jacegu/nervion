@@ -13,8 +13,8 @@ module Nervion
 
     attr_reader :http_method, :uri, :params, :oauth_params
 
-    def initialize(http_method, uri, params, oauth_params)
-      @http_method = http_method
+    def initialize(http_method, uri, params = {}, oauth_params)
+      @http_method = http_method.to_s.upcase
       @uri = uri
       @params = params
       @oauth_params = oauth_params
@@ -24,13 +24,13 @@ module Nervion
       @path ||= URI.parse(@uri).path
     end
 
-    def request
+    def to_s
       buffer = ''
-      buffer << @http_method.to_s.upcase << ' '
-      buffer << path                     << ' '
-      buffer << 'HTTP/1.1'               << "\n"
-      buffer << 'Authorization:'         << ' '
-      buffer << OAuthHeader.for(self)    << "\n"
+      buffer << @http_method           << ' '
+      buffer << path                   << ' '
+      buffer << 'HTTP/1.1'             << "\r\n"
+      buffer << 'Authorization:'       << ' '
+      buffer << OAuthHeader.for(self)  << "\r\n\r\n"
     end
   end
 end
