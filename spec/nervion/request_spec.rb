@@ -10,6 +10,7 @@ Keep-Alive: true
 
 EXPECTED_REQUEST = <<REQUEST
 GET /endpoint HTTP/1.1\r
+Host: twitter.com\r
 Authorization: OAuth xxx\r\n\r
 REQUEST
 
@@ -35,6 +36,10 @@ describe Nervion::Request do
 
   it 'is created with oauth params' do
     subject.oauth_params.should eq Hash[param: 'value']
+  end
+
+  it 'knows the host it points to' do
+    subject.host.should eq 'twitter.com'
   end
 
   it 'knows the path it points to' do
