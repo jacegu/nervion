@@ -19,15 +19,14 @@ describe Nervion::HttpParser do
   context 'with statuses above 200' do
     it 'outputs status code and response body to STDERR' do
       begin
-        STDERR.should_receive(:puts).with('401:')
-        STDERR.should_receive(:puts).with(BODY_401)
+        STDERR.should_receive(:puts).with("401:\n#{BODY_401}")
         subject << RESPONSE_401
-      rescue; end
+      rescue Nervion::Unsuccessful; end
     end
 
-    it 'raises an error' do
-      expect { subject << RESPONSE_401 }.to raise_error
+    it 'raises a Nervion::Unsuccessful error' do
+      expect { subject << RESPONSE_401 }.
+        to raise_error Nervion::Unsuccessful, 'Twitter Stream responded with 401'
     end
   end
 end
-

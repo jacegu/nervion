@@ -34,9 +34,15 @@ module Nervion
     end
 
     def handle_error_in(chunk)
-      STDERR.puts "#{@http_parser.status_code}:"
-      STDERR.puts chunk
-      raise 'error'
+      STDERR.puts "#{status_code}:\n#{chunk}"
+      raise Unsuccessful, "Twitter Stream responded with #{status_code}"
     end
+
+    def status_code
+      @http_parser.status_code
+    end
+  end
+
+  class Unsuccessful < Exception
   end
 end
