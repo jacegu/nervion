@@ -1,5 +1,2 @@
-require "nervion/version"
-
-module Nervion
-  # Your code goes here...
-end
+require_relative 'nervion/version'
+require_relative 'nervion/client'
