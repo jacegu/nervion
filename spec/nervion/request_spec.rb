@@ -1,53 +1,77 @@
 require 'nervion/request'
 
-=begin
-Content-Type: application/x-www-form-urlencoded
-User-Agent: Nervion Twitter Streaming API Client
-Accept-Encoding: deflate, gzip
-Keep-Alive: true
-=end
-
-
-EXPECTED_REQUEST = <<REQUEST
+EXPECTED_GET_REQUEST = <<GET
 GET /endpoint HTTP/1.1\r
 Host: twitter.com\r
 Authorization: OAuth xxx\r\n\r
-REQUEST
+GET
+
+EXPECTED_POST_REQUEST = <<POST
+POST /endpoint HTTP/1.1\r
+Host: twitter.com\r
+Authorization: OAuth xxx\r
+Content-Type: application/x-www-form-urlencoded\r
+Content-Length: 26\r
+\r
+p1=param%20value&p2=%24%26\r
+POST
 
 describe Nervion::Request do
-  subject { described_class.new http_method, uri, params, oauth_params }
-
-  let(:http_method)  { :get }
   let(:uri)          { 'https://twitter.com/endpoint' }
   let(:params)       { Hash.new }
   let(:oauth_params) { Hash[param: 'value'] }
 
-  it 'is created with an http method' do
-    subject.http_method.should eq 'GET'
+  shared_examples_for 'a request' do
+    it 'is created with an uri' do
+      subject.uri.should eq 'https://twitter.com/endpoint'
+    end
+
+    it 'is created with http params' do
+      subject.params.should be params
+    end
+
+    it 'is created with oauth params' do
+      subject.oauth_params.should eq Hash[param: 'value']
+    end
+
+    it 'knows the host it points to' do
+      subject.host.should eq 'twitter.com'
+    end
+
+    it 'knows the path it points to' do
+      subject.path.should eq '/endpoint'
+    end
   end
 
-  it 'is created with an uri' do
-    subject.uri.should eq 'https://twitter.com/endpoint'
+  context 'GET' do
+    subject { Nervion.get(uri, params, oauth_params) }
+
+    it 'has GET as http method' do
+      subject.http_method.should eq 'GET'
+    end
+
+    it 'has an string representation' do
+      Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
+      subject.to_s.should eq EXPECTED_GET_REQUEST
+    end
+
+    it_behaves_like 'a request'
   end
 
-  it 'is created with http params' do
-    subject.params.should be params
-  end
+  context 'POST' do
+    subject { Nervion.post(uri, params, oauth_params) }
 
-  it 'is created with oauth params' do
-    subject.oauth_params.should eq Hash[param: 'value']
-  end
+    it 'has POST as http method' do
+      subject.http_method.should eq 'POST'
+    end
 
-  it 'knows the host it points to' do
-    subject.host.should eq 'twitter.com'
-  end
+    it 'has an string representation' do
+      params = { p1: 'param value', p2: '$&' }
+      post = Nervion.post(uri, params, oauth_params)
+      Nervion::OAuthHeader.stub(:for).with(post).and_return 'OAuth xxx'
+      post.to_s.should eq EXPECTED_POST_REQUEST
+    end
 
-  it 'knows the path it points to' do
-    subject.path.should eq '/endpoint'
-  end
-
-  it 'composes the request' do
-    Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
-    subject.to_s.should eq EXPECTED_REQUEST
+    it_behaves_like 'a request'
   end
 end
