@@ -4,8 +4,6 @@ require_relative 'http_parser'
 
 module Nervion
   class Stream < EM::Connection
-    INACTIVITY_TIMEOUT = 1.0
-
     def initialize(*args)
       @request  = args[0]
       @callback = args[1]
@@ -16,7 +14,7 @@ module Nervion
     end
 
     def connection_completed
-      configure
+      start_tls
       send_data @request
     end
 
@@ -24,17 +22,17 @@ module Nervion
       @http_parser << data
     end
 
+    def unbind
+      SDTERR.puts 'Connection was closed out'
+      EM.stop
+    end
+
     private
 
     def setup_json_parser
-      Yajl::Parser.new(symbolize_key: true).tap do |parser|
+      Yajl::Parser.new(symbolize_keys: true).tap do |parser|
         parser.on_parse_complete = @callback
       end
-    end
-
-    def configure
-      set_comm_inactivity_timeout INACTIVITY_TIMEOUT
-      start_tls
     end
   end
 end

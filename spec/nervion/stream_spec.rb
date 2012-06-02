@@ -14,7 +14,7 @@ describe Nervion::Stream do
 
   context 'when the stream is initialized' do
     it 'sets up the JSON parser' do
-      Yajl::Parser.should_receive(:new).with(symbolize_key: true).
+      Yajl::Parser.should_receive(:new).with(symbolize_keys: true).
         and_return(json_parser)
       subject.post_init
     end
@@ -36,13 +36,7 @@ describe Nervion::Stream do
   context 'when the connection is established' do
     before do
       subject.stub(:start_tls)
-      subject.stub(:set_comm_inactivity_timeout)
       subject.stub(:send_data)
-    end
-
-    it 'sets the innactivity timeout' do
-      subject.should_receive(:set_comm_inactivity_timeout)
-      subject.connection_completed
     end
 
     it 'starts TLS encription' do
