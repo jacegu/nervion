@@ -39,22 +39,26 @@ Nervion mimics the endpoints provided by the
 [Twitter Stream API](https://dev.twitter.com/docs/streaming-apis).
 Currently it supports the
 [Public Streams](https://dev.twitter.com/docs/streaming-apis/streams/public).
+In the future we will add support for the
+[User Streams](https://dev.twitter.com/docs/streaming-apis/streams/user)
+and the
+[Site Streams](Use://dev.twitter.com/docs/streaming-apis/streams/site).
 
 Specifically the two calls that are that are available to the broad audience:
 
 - [`follow`](https://dev.twitter.com/docs/api/1/post/statuses/filter)
 - [`sample`](https://dev.twitter.com/docs/api/1/get/statuses/sample)
 
-[Firehose](https://dev.twitter.com/docs/api/1/get/statuses/firehose)
+[`firehose`](https://dev.twitter.com/docs/api/1/get/statuses/firehose)
 is not supported yet since requires a special access level.
 
 Checkout the docs of both endpoints to know what tweets you can query the
 Streaming API for.
 
 You can specify any of the parameters supported by the endpoints by passing them
-as named parameters to the methods provided by Nervion:
+as named parameters to the provided methods:
 
-
+```ruby
     require 'nervion'
 
     Nervion.filter(delimited: 1953, track: 'ruby', stall_warnings: true) do |parsed_status|
@@ -75,6 +79,7 @@ supports OAuth authentication**.
 
 You can provide the tokens and secrets in a configuration flavour:
 
+```ruby
     Nervion.configure do |config|
       config.consumer_key = the_consumer_key
       config.consumer_secret = the_consumer_secret
@@ -84,15 +89,14 @@ You can provide the tokens and secrets in a configuration flavour:
 
 
 
-###Parsing
+###Parsing JSON
 
-**Nervion will parse the JSON returned by twitter for you**.
-
-It uses [Yajl](https://github.com/brianmario/yajl-ruby)
-as JSON parser for its out of the box support for JSON streams.
+**Nervion will parse the JSON returned by twitter for you**. It uses
+[Yajl](https://github.com/brianmario/yajl-ruby) as JSON parser for its out of
+the box support for JSON streams.
 
 **The hash keys are symbolized in the process of parsing**. You will always have
-to use symbols to fetch data from the hashes that Nervion yields.
+to use symbols to fetch data in the callbacks.
 
 
 
@@ -103,9 +107,7 @@ Nowdays Nervion only has one callback that acts upon the received statuses. It
 versions.
 
 The callbacks will receive only one parameter: the hash with the symbolized keys
-resultant of the JSON parsing.
-
-You get to choose what to do with the hash:
+resultant of the JSON parsing. You get to choose what to do with the hash:
 [mash](https://github.com/intridea/hashie) it before working with it or even
 wrap it in some object that specializes on querying the information that is
 relevant to you.
@@ -113,25 +115,46 @@ relevant to you.
 To know what keys to expect you should browse the
 [*Platform Objects Documentation*](https://dev.twitter.com/docs/platform-objects/tweets).
 
+
 ####Status Callback
 
 You can setup a callback that **acts on all the received statuses** by simply
 passing in a block to the API call you are making:
 
+```ruby
     Nervion.sample { |status| puts status[:text] if status.has_key? :text }
 
 Be aware that **the callback will be called with any type of timeline update**
 (or even with warnings if the `stall_warnings` parameter is set to `true`. Keep
 this in mind when querying the hash.
 
-####Error Callbacks
 
-**No error callbacks are provided yet**.
+####HTTP Error Callbacks
 
-Right now the behaviour of the client is:
+This callback will be executed when the Streaming API sends a response with a
+status code above 200. After the callback has been executed a retry will be
+scheduled adhering to the
+[connection Guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)
+provided by twitter.
 
-  - In case of an unsuccessful request to Twitter Nervion will output the error and finish.
-  - In case of a connection timeout Nervion will prompt a message and finish.
+You can setup the callback like this:
+
+```ruby
+    Nervion.on_unsucessful_request do |response_status, response_body|
+
+    end
+
+The parameters yielded to the callback are the response status and the response
+body.
+
+If no callback is set, Nervion's default behaviour will be to output the
+an error message to `STDERR` that contains both the status and the body.
+
+
+####TCP Error callback
+
+**This callback will be provided soon**. Right now, in case of a problem with
+the network, Nervion will prompt a message and finish.
 
 
 
