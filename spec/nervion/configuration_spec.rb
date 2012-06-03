@@ -1,6 +1,7 @@
 require 'nervion/configuration'
 
 describe Nervion::Configuration do
+
   it 'allows configuration from the top level' do
     Nervion::Configuration.should_receive(:access_key=).with 'access_key'
     Nervion.configure { |config| config.access_key = 'access_key' }
@@ -53,4 +54,5 @@ describe Nervion::Configuration do
       described_class.fetch(:consumer_secret).should eq 'consumer_secret'
     end
   end
+
 end
