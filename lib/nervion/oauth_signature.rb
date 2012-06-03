@@ -4,7 +4,6 @@ require_relative 'percent_encoder'
 
 module Nervion
   class OAuthSignature
-    include PercentEncoder
 
     def self.for(http_method, base_url, params, oauth_params, secrets)
       new(http_method, base_url, params, oauth_params, secrets).to_s
@@ -48,5 +47,8 @@ module Nervion
       @params.merge @oauth_params
     end
 
+    def encode(value)
+      PercentEncoder.encode value
+    end
   end
 end

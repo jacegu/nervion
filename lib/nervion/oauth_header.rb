@@ -5,7 +5,6 @@ require_relative 'percent_encoder'
 
 module Nervion
   class OAuthHeader
-    include PercentEncoder
 
     def self.for(request)
       new(request.http_method, request.uri, request.params, request.oauth_params).to_s
@@ -27,7 +26,7 @@ module Nervion
     def to_s
       'OAuth ' << PARAMETERS_INCLUDED.map do |param|
         method_name = param.gsub /^oauth_/, ''
-        "#{param}=\"#{encode(send(method_name))}\""
+        "#{param}=\"#{PercentEncoder.encode(send(method_name))}\""
       end.join(', ')
     end
 

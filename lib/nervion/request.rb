@@ -83,7 +83,7 @@ module Nervion
 
     def body
       params.map do |name, value|
-        "#{encode(name.to_s)}=#{encode(value.to_s)}"
+        "#{name.to_s}=#{PercentEncoder.encode(value.to_s)}"
       end.join '&'
     end
   end
