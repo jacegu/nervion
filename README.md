@@ -59,11 +59,11 @@ You can specify any of the parameters supported by the endpoints by passing them
 as named parameters to the provided methods:
 
 ```ruby
-    require 'nervion'
+require 'nervion'
 
-    Nervion.filter(delimited: 1953, track: 'ruby', stall_warnings: true) do |parsed_status|
-      #do something with the parsed status
-    end
+Nervion.filter(delimited: 1953, track: 'ruby', stall_warnings: true) do |parsed_status|
+  #do something with the parsed status
+end
 
 
 If the API adds support for more parameters in the future they will be supported
@@ -80,12 +80,12 @@ supports OAuth authentication**.
 You can provide the tokens and secrets in a configuration flavour:
 
 ```ruby
-    Nervion.configure do |config|
-      config.consumer_key = the_consumer_key
-      config.consumer_secret = the_consumer_secret
-      config.access_token = the_access_token
-      config.access_token_secret = the_access_token_secret
-    end
+Nervion.configure do |config|
+  config.consumer_key = the_consumer_key
+  config.consumer_secret = the_consumer_secret
+  config.access_token = the_access_token
+  config.access_token_secret = the_access_token_secret
+end
 
 
 
@@ -122,7 +122,8 @@ You can setup a callback that **acts on all the received statuses** by simply
 passing in a block to the API call you are making:
 
 ```ruby
-    Nervion.sample { |status| puts status[:text] if status.has_key? :text }
+Nervion.sample { |status| puts status[:text] if status.has_key? :text }
+
 
 Be aware that **the callback will be called with any type of timeline update**
 (or even with warnings if the `stall_warnings` parameter is set to `true`. Keep
@@ -140,9 +141,9 @@ provided by twitter.
 You can setup the callback like this:
 
 ```ruby
-    Nervion.on_unsucessful_request do |response_status, response_body|
-
-    end
+Nervion.on_unsucessful_request do |response_status, response_body|
+  #do something about it
+end
 
 The parameters yielded to the callback are the response status and the response
 body.
