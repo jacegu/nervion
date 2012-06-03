@@ -4,9 +4,9 @@ require File.expand_path('../lib/nervion/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Javier Acero"]
   gem.email         = ["j4cegu@gmail.com"]
-  gem.description   = %q{A Twitter Stream API client}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{A minimalistic Twitter Stream API Ruby client}
+  gem.summary       = %q{}
+  gem.homepage      = "https://github.com/jacegu/nervion"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
