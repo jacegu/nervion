@@ -34,8 +34,8 @@ module Nervion
     end
 
     def handle_error_in(chunk)
-      STDERR.puts "#{status_code}:\n#{chunk}"
-      raise Unsuccessful, "Twitter Stream responded with #{status_code}"
+      #STDERR.puts "#{status_code}:\n#{chunk}"
+      raise Unsuccessful.new(status_code, chunk)
     end
 
     def status_code
@@ -44,5 +44,10 @@ module Nervion
   end
 
   class Unsuccessful < Exception
+    attr_reader :status, :body
+
+    def initialize(status, body)
+      @status, @body = status, body
+    end
   end
 end
