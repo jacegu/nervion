@@ -141,7 +141,7 @@ provided by twitter.
 You can setup the callback like this:
 
 ```ruby
-Nervion.on_unsucessful_request do |response_status, response_body|
+Nervion.on_unsuccessful_request do |response_status, response_body|
   #do something about it
 end
 ```
