@@ -64,7 +64,7 @@ require 'nervion'
 Nervion.filter(delimited: 1953, track: 'ruby', stall_warnings: true) do |parsed_status|
   #do something with the parsed status
 end
-
+```
 
 If the API adds support for more parameters in the future they will be supported
 straight away since Nervion does no work on them: they are just submitted to
@@ -86,7 +86,7 @@ Nervion.configure do |config|
   config.access_token = the_access_token
   config.access_token_secret = the_access_token_secret
 end
-
+```
 
 
 ###Parsing JSON
@@ -123,7 +123,7 @@ passing in a block to the API call you are making:
 
 ```ruby
 Nervion.sample { |status| puts status[:text] if status.has_key? :text }
-
+```
 
 Be aware that **the callback will be called with any type of timeline update**
 (or even with warnings if the `stall_warnings` parameter is set to `true`. Keep
@@ -144,6 +144,7 @@ You can setup the callback like this:
 Nervion.on_unsucessful_request do |response_status, response_body|
   #do something about it
 end
+```
 
 The parameters yielded to the callback are the response status and the response
 body.
