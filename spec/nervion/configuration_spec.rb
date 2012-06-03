@@ -1,15 +1,12 @@
 require 'nervion/configuration'
 
-describe Nervion do
-  it 'can be configured' do
-    Nervion::Configuration.should_receive(:access_key=).
-      with 'access_key'
-    subject.configure { |config| config.access_key = 'access_key' }
-  end
-end
-
 describe Nervion::Configuration do
-  context 'when it has not being configured' do
+  it 'allows configuration from the top level' do
+    Nervion::Configuration.should_receive(:access_key=).with 'access_key'
+    Nervion.configure { |config| config.access_key = 'access_key' }
+  end
+
+  context 'when it has not been configured' do
     it 'has an empty string as consumer_key' do
       described_class.consumer_key.should eq ''
     end

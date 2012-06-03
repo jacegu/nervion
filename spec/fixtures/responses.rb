@@ -9,7 +9,6 @@ Transfer-Encoding: chunked\r
 \r
 7d\r
 {"delete":{"status":{"user_id_str":"482755917","id":182856546533908480,"user_id":482755917,"id_str":"182856546533908480"}}}\r
-\r
 RESPONSE_200
 
 BODY_401 = <<BODY_401
@@ -23,8 +22,7 @@ BODY_401 = <<BODY_401
 <p>Problem accessing '/1/statuses/sample.json'. Reason:
 <pre>Unauthorized</pre>
 </body>
-</html>\r\n
-\r
+</html>\r
 BODY_401
 
 RESPONSE_401 = <<RESPONSE_401
@@ -45,8 +43,7 @@ Connection: close\r
 <p>Problem accessing '/1/statuses/sample.json'. Reason:
 <pre>Unauthorized</pre>
 </body>
-</html>\r\n
-\r
+</html>\r
 RESPONSE_401
 
 
