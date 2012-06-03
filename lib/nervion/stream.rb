@@ -4,6 +4,7 @@ require_relative 'http_parser'
 
 module Nervion
   class Stream < EM::Connection
+
     def initialize(*args)
       @request = args[0]
       @handler = args[1]
@@ -18,9 +19,5 @@ module Nervion
       @handler << data
     end
 
-    def unbind
-      SDTERR.puts 'Connection was closed out'
-      EM.stop
-    end
   end
 end

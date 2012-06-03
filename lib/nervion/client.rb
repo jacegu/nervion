@@ -1,6 +1,7 @@
-require_relative 'stream'
-require_relative 'request'
-require_relative 'configuration'
+require 'nervion/configuration'
+require 'nervion/request'
+require 'nervion/stream'
+require 'nervion/stream_handler'
 
 module Nervion
   STREAM_API_HOST = 'stream.twitter.com'
@@ -26,9 +27,26 @@ module Nervion
   end
 
   class Client
+    #TODO this should not receive a single proc but some object that
+    #     contains every callback
     def self.stream(request, &callback)
+      callback_table = {
+        status: callback,
+        unsuccessful_request: ->(status, body){ STDERR.puts "#{status}: #{body}" }
+      }
+      new.stream request, callback_table
+    end
+
+    def initialize
+      @json_parser = Yajl::Parser.new(symbolize_keys: true)
+      @http_parser = HttpParser.new(@json_parser)
+    end
+
+    def stream(request, callbacks)
+      stream_handler = StreamHandler.new(@http_parser, @json_parser, callbacks)
+
       EM.run do
-        EM.connect STREAM_API_HOST, 443, Stream, request, callback
+        EM.connect STREAM_API_HOST, 443, Stream, request, stream_handler
       end
     end
   end
