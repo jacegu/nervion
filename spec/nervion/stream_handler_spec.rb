@@ -7,12 +7,12 @@ describe Nervion::StreamHandler do
   let(:callbacks) do
     {
       status: status_callback,
-      unsuccessful_request: unsuccessful_request_callback
+      http_error: http_error_callback
     }
   end
 
   let(:status_callback)     { mock :status_callback }
-  let(:unsuccessful_request_callback) { mock :unsuccessful_request_callback }
+  let(:http_error_callback) { mock(:http_error_callback).as_null_object }
 
   it 'sets up the status received callback' do
     json_parser.should_receive(:on_parse_complete=).with(status_callback)
@@ -27,12 +27,21 @@ describe Nervion::StreamHandler do
       subject << data
     end
 
-    it 'handles unsuccessful request errors' do
-      status, body = 401, 'Unauthorized'
-      error = Nervion::Unsuccessful.new(status, body)
-      http_parser.stub(:<<).and_raise error
-      unsuccessful_request_callback.should_receive(:call).with(status, body)
-      subject << data
+    context 'on HTTP error' do
+      let(:http_error) { Nervion::Unsuccessful.new(401, 'Unauthorized') }
+
+      before { http_parser.stub(:<<).and_raise http_error }
+
+      it 'calls unsuccessful request callback' do
+        begin
+          http_error_callback.should_receive(:call).with(401, 'Unauthorized')
+          subject << data
+        rescue Nervion::Unsuccessful; end
+      end
+
+      it 're-raises the error' do
+        expect { subject << data }.to raise_error(http_error)
+      end
     end
   end
 
