@@ -1,2 +1,2 @@
-require_relative 'nervion/version'
-require_relative 'nervion/client'
+require 'nervion/version'
+require 'nervion/client'

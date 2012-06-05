@@ -1,3 +1,5 @@
+$: << File.join(File.dirname(__FILE__), '..')
+
 require 'nervion/configuration'
 require 'nervion/request'
 require 'nervion/stream'
@@ -37,17 +39,16 @@ module Nervion
       new.stream request, callback_table
     end
 
-    def initialize
+    def initialize(host = STREAM_API_HOST, port = 443)
+      @host = host
+      @port = port
       @json_parser = Yajl::Parser.new(symbolize_keys: true)
       @http_parser = HttpParser.new(@json_parser)
     end
 
     def stream(request, callbacks)
       stream_handler = StreamHandler.new(@http_parser, @json_parser, callbacks)
-
-      EM.run do
-        EM.connect STREAM_API_HOST, 443, Stream, request, stream_handler
-      end
+      EM.run { EM.connect @host, @port, Stream, request, stream_handler }
     end
   end
 end
