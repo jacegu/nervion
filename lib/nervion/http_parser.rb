@@ -2,7 +2,7 @@ require 'http/parser'
 
 module Nervion
   class HttpParser
-    attr_reader :json_parser
+    attr_reader :json_parser, :http_parser
 
     def initialize(json_parser)
       @json_parser = json_parser
@@ -16,9 +16,7 @@ module Nervion
     private
 
     def setup_http_parser
-      Http::Parser.new.tap do |parser|
-        parser.on_body = lambda { |chunk| process(chunk) }
-      end
+      Http::Parser.new.tap { |parser| parser.on_body = method(:process) }
     end
 
     def process(chunk)
@@ -34,12 +32,16 @@ module Nervion
     end
 
     def handle_error_in(chunk)
-      #STDERR.puts "#{status_code}:\n#{chunk}"
-      raise Unsuccessful.new(status_code, chunk)
+      @http_parser = setup_http_parser
+      raise Unsuccessful.new(status_code, remove_empty_lines(chunk))
     end
 
     def status_code
       @http_parser.status_code
+    end
+
+    def remove_empty_lines(chunk)
+      chunk.gsub(/^\s*$/,'')
     end
   end
 

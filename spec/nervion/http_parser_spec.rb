@@ -17,17 +17,17 @@ describe Nervion::HttpParser do
   end
 
   context 'with statuses above 200' do
-    it 'outputs status code and response body to STDERR' do
-      pending 'this should move to the default unsuccessfull request callback'
+    it 'resets the HTTP parsing' do
       begin
-        STDERR.should_receive(:puts).with("401:\n#{BODY_401}")
+        fresh_parser = stub(:fresh_parser).as_null_object
+        subject.stub(:setup_http_parser).and_return(fresh_parser)
         subject << RESPONSE_401
+        subject.http_parser.should be fresh_parser
       rescue Nervion::Unsuccessful; end
     end
 
     it 'raises a Nervion::Unsuccessful error' do
-      expect { subject << RESPONSE_401 }.
-        to raise_error Nervion::Unsuccessful
+      expect { subject << RESPONSE_401 }.to raise_error Nervion::Unsuccessful
     end
   end
 end
