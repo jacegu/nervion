@@ -37,6 +37,10 @@ module Nervion
       @uri.host
     end
 
+    def port
+      @uri.port
+    end
+
     private
 
     def request_line

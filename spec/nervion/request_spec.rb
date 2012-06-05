@@ -17,7 +17,7 @@ p1=param%20value&p2=%24%26\r
 POST
 
 describe Nervion::Request do
-  let(:uri)          { 'https://twitter.com/endpoint' }
+  let(:uri)          { 'https://twitter.com:443/endpoint' }
   let(:params)       { Hash.new }
   let(:oauth_params) { Hash[param: 'value'] }
 
@@ -36,6 +36,10 @@ describe Nervion::Request do
 
     it 'knows the host it points to' do
       subject.host.should eq 'twitter.com'
+    end
+
+    it 'knows the port it will connect to' do
+      subject.port.should eq 443
     end
 
     it 'knows the path it points to' do
