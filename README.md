@@ -141,24 +141,21 @@ provided by twitter.
 You can setup the callback like this:
 
 ```ruby
-Nervion.on_unsuccessful_request do |response_status, response_body|
+Nervion.on_http_error do |status, body|
   #do something about it
 end
 ```
 
-The parameters yielded to the callback are the response status and the response
-body.
-
-If no callback is set, Nervion's default behaviour will be to output the
-an error message to `STDERR` that contains both the status and the body.
+The parameters yielded to the callback are the **response status** and the
+**response body**. If no callback is set, Nervion's default behaviour will be
+to output the an error message to `STDERR` that contains both the status and
+the body of Twitter Streaming API's response.
 
 
 ####TCP Error callback
 
 **This callback will be provided soon**. Right now, in case of a problem with
 the network, Nervion will prompt a message and finish.
-
-
 
 ## EventMachine Integration
 
