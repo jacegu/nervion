@@ -6,7 +6,7 @@ module Nervion
     MAX_HTTP_TIMEOUT = 240
     RECONNECTION_LIMIT = 10
 
-    TOO_MANY_HTTP_ERRORS = 'Too many reconnect attempts. Check out your client configuration.'
+    TOO_MANY_HTTP_ERRORS = "There have been too many HTTP errors. This is probably a client configuration issue that has to be taken care of."
 
     def initialize
       @http_error_count = 0
@@ -34,7 +34,7 @@ module Nervion
     end
 
     def too_many_reconnects?
-      @http_error_count == RECONNECTION_LIMIT
+      @http_error_count >= RECONNECTION_LIMIT
     end
   end
 

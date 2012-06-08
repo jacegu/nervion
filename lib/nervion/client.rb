@@ -34,7 +34,7 @@ module Nervion
     def self.stream(request, &callback)
       callback_table = {
         status: callback,
-        unsuccessful_request: ->(status, body){ STDERR.puts "#{status}: #{body}" }
+        http_error: ->(status, body){ STDERR.puts "#{status}: #{body}" }
       }
       new.stream request, callback_table
     end
