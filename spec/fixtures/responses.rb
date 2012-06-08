@@ -1,3 +1,9 @@
+RESPONSE_200_HEADERS = <<RESPONSE_200_HEADERS
+HTTP/1.1 200 OK\r
+Content-Type: application/json\r
+Transfer-Encoding: chunked\r\n\r
+RESPONSE_200_HEADERS
+
 BODY_200 = <<BODY_200
 {"delete":{"status":{"user_id_str":"482755917","id":182856546533908480,"user_id":482755917,"id_str":"182856546533908480"}}}\r
 BODY_200
@@ -45,5 +51,3 @@ Connection: close\r
 </body>
 </html>\r
 RESPONSE_401
-
-
