@@ -11,7 +11,7 @@ module Nervion
     end
 
     def post_init
-      @reconnection_scheduler = ReconnectionScheduler.new
+      @scheduler = ReconnectionScheduler.new
     end
 
     def connection_completed
@@ -23,9 +23,12 @@ module Nervion
       begin
         @handler << data
       rescue Unsuccessful
-        delay = @reconnection_scheduler.http_error_timeout
-        EM.add_timer(delay) { reconnect(@request.host, @request.port) }
+        @scheduler.reconnect_after_http_error_in self
       end
+    end
+
+    def retry
+      reconnect @request.host, @request.port
     end
 
   end
