@@ -157,6 +157,8 @@ Streaming API's response.
 **This callback will be provided soon**. Right now, in case of a problem with
 the network, Nervion will prompt a message and finish.
 
+
+
 ## EventMachine Integration
 
 Nervion runs on the top of EventMachine.
