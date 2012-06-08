@@ -10,12 +10,24 @@ module Nervion
   SAMPLE_ENDPOINT = "https://#{STREAM_API_HOST}/1/statuses/sample.json"
   FILTER_ENDPOINT = "https://#{STREAM_API_HOST}/1/statuses/filter.json"
 
+  @callbacks = {
+    status: lambda{},
+    http_error: ->(status, body){ STDERR.puts "#{status}: #{body}" }
+  }
+
+  def self.on_http_error(&callback)
+    @callbacks[:http_error] = callback
+    self
+  end
+
   def self.sample(params = {}, &callback)
-     Client.stream sample_endpoint(params), &callback
+    @callbacks[:status] = callback
+    Client.stream sample_endpoint(params), @callbacks
   end
 
   def self.filter(params, &callback)
-     Client.stream filter_endpoint(params), &callback
+    @callbacks[:status] = callback
+    Client.stream filter_endpoint(params), @callbacks
   end
 
   private
@@ -29,14 +41,8 @@ module Nervion
   end
 
   class Client
-    #TODO this should not receive a single proc but some object that
-    #     contains every callback
-    def self.stream(request, &callback)
-      callback_table = {
-        status: callback,
-        http_error: ->(status, body){ STDERR.puts "#{status}: #{body}" }
-      }
-      new.stream request, callback_table
+    def self.stream(request, callbacks)
+      new.stream request, callbacks
     end
 
     def initialize(host = STREAM_API_HOST, port = 443)
