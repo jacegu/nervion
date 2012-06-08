@@ -19,5 +19,9 @@ module Nervion
       @callbacks[:http_error].call(error.status, error.body)
     end
 
+    def handle_network_error
+      @http_parser.reset!
+      @callbacks[:network_error].call
+    end
   end
 end

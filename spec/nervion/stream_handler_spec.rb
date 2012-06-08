@@ -6,13 +6,15 @@ describe Nervion::StreamHandler do
   let(:json_parser) { mock(:json_parser).as_null_object }
   let(:callbacks) do
     {
-      status: status_callback,
-      http_error: http_error_callback
+      status:        status_callback,
+      http_error:    http_error_callback,
+      network_error: network_error_callback
     }
   end
 
-  let(:status_callback)     { mock :status_callback }
-  let(:http_error_callback) { mock(:http_error_callback).as_null_object }
+  let(:status_callback)        { mock :status_callback }
+  let(:http_error_callback)    { mock(:http_error_callback).as_null_object }
+  let(:network_error_callback) { mock(:network_error_callback).as_null_object }
 
   let(:data) { stub }
 
@@ -37,6 +39,18 @@ describe Nervion::StreamHandler do
     it 'calls the HTTP error callback' do
       http_error_callback.should_receive(:call).with(401, 'Unauthorized')
       subject.handle_http_error http_error
+    end
+  end
+
+  context 'handling network errors' do
+    it 'resets the HTTP parser' do
+      http_parser.should_receive(:reset!)
+      subject.handle_network_error
+    end
+
+    it 'calls the network error callback' do
+      network_error_callback.should_receive(:call)
+      subject.handle_network_error
     end
   end
 
