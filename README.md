@@ -130,7 +130,7 @@ Be aware that **the callback will be called with any type of timeline update**
 this in mind when querying the hash.
 
 
-####HTTP Error Callbacks
+#### HTTP Error Callback
 
 This callback will be executed when the Streaming API sends a response with a
 status code above 200. After the callback has been executed a retry will be
@@ -141,24 +141,21 @@ provided by twitter.
 You can setup the callback like this:
 
 ```ruby
-Nervion.on_unsuccessful_request do |response_status, response_body|
-  #do something about it
+Nervion.on_http_error do |status, body|
+  puts "Response status was: #{status}"
+  puts "Response body was: #{body}
 end
 ```
 
-The parameters yielded to the callback are the response status and the response
-body.
-
-If no callback is set, Nervion's default behaviour will be to output the
-an error message to `STDERR` that contains both the status and the body.
+If no callback is set, Nervion's default behaviour will be to output the an
+error message to `STDERR` that contains both the status and the body of Twitter
+Streaming API's response.
 
 
-####TCP Error callback
+#### Network Error callback
 
 **This callback will be provided soon**. Right now, in case of a problem with
 the network, Nervion will prompt a message and finish.
-
-
 
 ## EventMachine Integration
 
@@ -176,8 +173,9 @@ release of the gem:
 
   - Adhere to the
   [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)
-  - Provide error callbacks
+  - Provide a network error callback
   - Take advantage of EventMachine deferrables on callbacks
+  - Rewrite and improve the DSL provided to setup Nervion
 
 Once those basic features are provided there are a few more that will be very
 interesting to have:
