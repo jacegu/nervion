@@ -22,7 +22,7 @@ module Nervion
     def receive_data(data)
       begin
         @handler << data
-      rescue Unsuccessful
+      rescue HttpError
         @scheduler.reconnect_after_http_error_in self
       end
     end

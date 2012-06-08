@@ -13,6 +13,10 @@ module Nervion
       @http_parser << http_stream
     end
 
+    def reset!
+      @http_parser.reset!
+    end
+
     private
 
     def setup_http_parser
@@ -20,11 +24,15 @@ module Nervion
     end
 
     def process(chunk)
-      if @http_parser.status_code == 200
+      if request_successful?
         parse_json_from chunk
       else
         handle_error_in chunk
       end
+    end
+
+    def request_successful?
+      @http_parser.status_code == 200
     end
 
     def parse_json_from(chunk)
@@ -32,20 +40,19 @@ module Nervion
     end
 
     def handle_error_in(chunk)
-      @http_parser = setup_http_parser
-      raise Unsuccessful.new(status_code, remove_empty_lines(chunk))
+      raise HttpError.new(status_code, condense_in_one_line(chunk))
     end
 
     def status_code
       @http_parser.status_code
     end
 
-    def remove_empty_lines(chunk)
-      chunk.gsub(/^\s*$/,'')
+    def condense_in_one_line(chunk)
+      chunk.split("\n").map { |line| line.strip }.join
     end
   end
 
-  class Unsuccessful < Exception
+  class HttpError < Exception
     attr_reader :status, :body
 
     def initialize(status, body)

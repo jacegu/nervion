@@ -14,8 +14,9 @@ module Nervion
 
     def <<(data)
       @http_parser << data
-    rescue Unsuccessful => error
+    rescue HttpError => error
       @callbacks[:http_error].call(error.status, error.body)
+      @http_parser.reset!
       raise error
     end
 

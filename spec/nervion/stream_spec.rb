@@ -34,7 +34,7 @@ describe Nervion::Stream do
   end
 
   it 'reconnects on HTTP errors' do
-    data, error = stub, Nervion::Unsuccessful.new(401, 'Unauthorized')
+    data, error = stub, Nervion::HttpError.new(401, 'Unauthorized')
     handler.stub(:<<).and_raise error
     scheduler.should_receive(:reconnect_after_http_error_in).with(subject)
     subject.receive_data(data)
