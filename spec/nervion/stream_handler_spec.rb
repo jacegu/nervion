@@ -26,27 +26,17 @@ describe Nervion::StreamHandler do
     subject << data
   end
 
-  context 'on HTTP error' do
-    let(:http_error) { Nervion::HttpError.new(401, 'Unauthorized') }
-
-    before { http_parser.stub(:<<).and_raise http_error }
-
-    it 'calls the callback' do
-      begin
-        http_error_callback.should_receive(:call).with(401, 'Unauthorized')
-        subject << data
-      rescue Nervion::HttpError; end
-    end
+  context 'handling HTTP errors' do
+    let(:http_error) { stub(:http_error, status: 401, body: 'Unauthorized') }
 
     it 'resets the HTTP parser' do
-      begin
-        http_parser.should_receive(:reset!)
-        subject << data
-      rescue Nervion::HttpError; end
+      http_parser.should_receive(:reset!)
+      subject.handle_http_error http_error
     end
 
-    it 're-raises the error' do
-      expect { subject << data }.to raise_error(http_error)
+    it 'calls the HTTP error callback' do
+      http_error_callback.should_receive(:call).with(401, 'Unauthorized')
+      subject.handle_http_error http_error
     end
   end
 
