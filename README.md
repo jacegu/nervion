@@ -143,7 +143,7 @@ You can setup the callback like this:
 ```ruby
 Nervion.on_http_error do |status, body|
   puts "Response status was: #{status}"
-  puts "Response body was: #{body}
+  puts "Response body was: #{body}"
 end
 ```
 
