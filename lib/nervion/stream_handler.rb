@@ -24,5 +24,8 @@ module Nervion
       @callbacks[:network_error].call
     end
 
+    def stream_close_requested?
+      true
+    end
   end
 end

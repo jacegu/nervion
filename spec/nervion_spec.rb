@@ -54,18 +54,18 @@ end
 class TwitterStreamUnauthorizedDouble < TwitterStreamDouble
   def receive_data(data)
     send_data RESPONSE_401
+    close_connection_after_writing
   end
 end
 
 describe 'Receiving a stream' do
   it 'receives all the statuses' do
-    pending 'pending of handling client stop errors properly'
     run_server_and_client TwitterStreamDouble
     $statuses.count.should eq STATUS_COUNT
   end
 
   it 'calls callback on HTTP errors' do
-    pending 'pending of handling client stop errors properly'
+    pending 'until handling unexpected closed connections again'
     run_server_and_client TwitterStreamUnauthorizedDouble
     $http_error_status.should eq 401
     $http_error_body.should match /Unauthorized/

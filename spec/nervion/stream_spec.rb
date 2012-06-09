@@ -49,7 +49,10 @@ describe Nervion::Stream do
 
   context 'on unbound connections' do
     context 'due to HTTP errors' do
-      before { subject.stub(:http_error).and_return(http_error) }
+      before do
+        handler.stub(:stream_close_requested?).and_return(false)
+        subject.stub(:http_error).and_return(http_error)
+      end
 
       it 'notifies the error to the stream handler and reconnects' do
         handler.should_receive(:handle_http_error).with(http_error)
@@ -65,6 +68,8 @@ describe Nervion::Stream do
     end
 
     context 'due to network errors' do
+      before { handler.stub(:stream_close_requested?).and_return(false) }
+
       it 'notifies the error to the stream handler' do
         handler.should_receive(:handle_network_error)
         scheduler.stub(:reconnect_after_network_error_in)
@@ -77,6 +82,19 @@ describe Nervion::Stream do
         subject.unbind
       end
     end
+
+
+    context 'due to a request to close the stream' do
+      it 'lets the stream to be closed' do
+        handler.stub(:stream_close_requested?).and_return(true)
+        handler.should_not_receive(:handle_http_error)
+        handler.should_not_receive(:handle_network_error)
+        scheduler.should_not_receive(:reconnect_after_http_error_in)
+        scheduler.should_not_receive(:reconnect_after_network_error_in)
+        subject.unbind
+      end
+    end
+
   end
 
 end
