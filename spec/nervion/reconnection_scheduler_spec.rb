@@ -27,7 +27,7 @@ describe Nervion::ReconnectionScheduler do
     end
 
     it 'waits 10 seconds before reconnecting' do
-      EM.should_receive(:add_timer).with described_class::MIN_HTTP_TIMEOUT
+      EM.should_receive(:add_timer).with described_class::MIN_HTTP_ERROR_TIMEOUT
       subject.reconnect_after_http_error_in stream
     end
 
@@ -46,4 +46,10 @@ describe Nervion::ReconnectionScheduler do
     end
   end
 
+  context 'on network errors' do
+    it 'tells the stream to reconnect' do
+      stream.should_receive(:retry)
+      subject.reconnect_after_network_error_in stream
+    end
+  end
 end

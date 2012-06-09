@@ -4,6 +4,7 @@ describe Nervion::StreamHandler do
   subject           { described_class.new http_parser, json_parser, callbacks }
   let(:http_parser) { mock(:http_parser).as_null_object }
   let(:json_parser) { mock(:json_parser).as_null_object }
+
   let(:callbacks) do
     {
       status:        status_callback,

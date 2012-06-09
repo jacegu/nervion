@@ -23,5 +23,6 @@ module Nervion
       @http_parser.reset!
       @callbacks[:network_error].call
     end
+
   end
 end
