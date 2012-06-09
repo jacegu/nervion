@@ -21,23 +21,22 @@ describe Nervion::Stream do
     subject.connection_completed
   end
 
-  it 'provides the received data to the stream handler' do
+  it 'handles received data' do
     data = stub
     handler.should_receive(:<<).with(data)
     subject.receive_data(data)
   end
 
   it 'registers HTTP errors' do
-    data = stub
     handler.stub(:<<).and_raise http_error
-    subject.receive_data(data)
+    subject.receive_data('some random data')
     subject.http_error.should be http_error
   end
 
   it 'clears HTTP errors before retries' do
     subject.stub(:reconnect)
     handler.stub(:<<).and_raise http_error
-    subject.receive_data(:anything)
+    subject.receive_data('some random data')
     subject.retry
     subject.http_error.should be_nil
   end
@@ -54,7 +53,7 @@ describe Nervion::Stream do
         subject.stub(:http_error).and_return(http_error)
       end
 
-      it 'notifies the error to the stream handler and reconnects' do
+      it 'notifies the error' do
         handler.should_receive(:handle_http_error).with(http_error)
         scheduler.stub(:reconnect_after_http_error_in)
         subject.unbind
@@ -70,7 +69,7 @@ describe Nervion::Stream do
     context 'due to network errors' do
       before { handler.stub(:stream_close_requested?).and_return(false) }
 
-      it 'notifies the error to the stream handler' do
+      it 'notifies the error' do
         handler.should_receive(:handle_network_error)
         scheduler.stub(:reconnect_after_network_error_in)
         subject.unbind
@@ -83,7 +82,6 @@ describe Nervion::Stream do
       end
     end
 
-
     context 'due to a request to close the stream' do
       it 'lets the stream to be closed' do
         handler.stub(:stream_close_requested?).and_return(true)
@@ -94,7 +92,6 @@ describe Nervion::Stream do
         subject.unbind
       end
     end
-
   end
 
 end

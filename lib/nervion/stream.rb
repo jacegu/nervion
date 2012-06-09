@@ -22,11 +22,9 @@ module Nervion
     end
 
     def receive_data(data)
-      begin
-        @handler << data
-      rescue HttpError => error
-        @http_error = error
-      end
+      @handler << data
+    rescue HttpError => error
+      @http_error = error
     end
 
     def retry
