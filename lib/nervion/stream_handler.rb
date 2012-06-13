@@ -25,7 +25,12 @@ module Nervion
     end
 
     def stream_close_requested?
-      true
+      @close_stream ||= false
     end
+
+    def close_stream
+      @close_stream = true
+    end
+
   end
 end

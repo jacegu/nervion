@@ -17,16 +17,21 @@ describe Nervion::StreamHandler do
   let(:http_error_callback)    { mock(:http_error_callback).as_null_object }
   let(:network_error_callback) { mock(:network_error_callback).as_null_object }
 
-  let(:data) { stub }
-
   it 'sets up the status received callback' do
     json_parser.should_receive(:on_parse_complete=).with(status_callback)
     described_class.new http_parser, json_parser, callbacks
   end
 
   it 'appends the received data to the http parser' do
+    data = stub
     http_parser.should_receive(:<<).with(data)
     subject << data
+  end
+
+  it 'can be told to close the stream' do
+    subject.stream_close_requested?.should be_false
+    subject.close_stream
+    subject.stream_close_requested?.should be_true
   end
 
   context 'handling HTTP errors' do
@@ -54,5 +59,4 @@ describe Nervion::StreamHandler do
       subject.handle_network_error
     end
   end
-
 end
