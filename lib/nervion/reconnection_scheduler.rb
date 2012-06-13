@@ -13,18 +13,19 @@ module Nervion
     end
 
     def reconnect_after_http_error_in(stream)
-      @http_errors.notify_error
-      delay = @http_wait_calculator.wait_for(@http_errors.count)
-      schedule_reconnect stream, delay
+      reconnect_after_error stream, @http_errors, @http_wait_calculator
     end
 
     def reconnect_after_network_error_in(stream)
-      @network_errors.notify_error
-      delay = @network_wait_calculator.wait_for(@network_errors.count)
-      schedule_reconnect stream, delay
+      reconnect_after_error stream, @network_errors, @network_wait_calculator
     end
 
     private
+
+    def reconnect_after_error(stream, errors, wait_calculator)
+      errors.notify_error
+      schedule_reconnect stream, wait_calculator.wait_after(errors.count)
+    end
 
     def schedule_reconnect(stream, seconds)
       EM.add_timer(seconds) { stream.retry }
@@ -33,6 +34,7 @@ module Nervion
 
   class ErrorCounter
     attr_reader :count
+
     def initialize(limit)
       @count = 0
       @limit = limit
@@ -40,7 +42,13 @@ module Nervion
 
     def notify_error
       @count += 1
-      raise TooManyConnectionErrors if @count >= @limit
+      raise TooManyConnectionErrors if too_many_errors?
+    end
+
+    private
+
+    def too_many_errors?
+      @count >= @limit
     end
   end
 
@@ -50,8 +58,18 @@ module Nervion
       @calculator = calculator
     end
 
-    def wait_for(error_count)
-      [@calculator.call(error_count), @max_wait].min
+    def wait_after(error_count)
+      cap_wait @max_wait, calculate_wait_after(error_count)
+    end
+
+    private
+
+    def cap_wait(cap_value, current_wait)
+      [current_wait, cap_value].min
+    end
+
+    def calculate_wait_after(error_count)
+      @calculator.call(error_count)
     end
   end
 
