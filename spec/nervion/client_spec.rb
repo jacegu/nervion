@@ -1,13 +1,14 @@
 require 'eventmachine'
 require 'nervion/client'
 
+describe 'Nervion Client DSL' do
+end
+
 describe Nervion::Client do
   subject              { described_class.new }
   let(:request)        { stub :request }
   let(:callbacks)      { stub :callbacks }
   let(:stream_handler) { stub :stream_handler }
-  let(:json_parser)    { stub :json_parser }
-  let(:http_parser)    { stub :http_parser }
 
   before(:all) do
     module EventMachine
@@ -29,22 +30,8 @@ describe Nervion::Client do
     end
   end
 
-  it 'setups the JSON parser' do
-    Yajl::Parser.should_receive(:new).with(symbolize_keys: true)
-    described_class.new
-  end
-
-  it 'setups the HTTP parser' do
-    Yajl::Parser.stub(:new).and_return(json_parser)
-    Nervion::HttpParser.should_receive(:new).with(json_parser)
-    described_class.new
-  end
-
   it 'setups the stream handler' do
-    Yajl::Parser.stub(:new).and_return(json_parser)
-    Nervion::HttpParser.stub(:new).and_return(http_parser)
-    Nervion::StreamHandler.should_receive(:new).
-      with(http_parser, json_parser, callbacks)
+    Nervion::StreamHandler.should_receive(:new).with(callbacks)
     subject.stream(request, callbacks)
   end
 

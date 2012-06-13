@@ -27,14 +27,12 @@ module Nervion
 
   def self.sample(params = {}, &callback)
     @callbacks[:status] = callback
-    @client = Client.new
-    @client.stream sample_endpoint(params), @callbacks
+    @client = Client.new.tap { |c| c.stream sample_endpoint(params), @callbacks }
   end
 
   def self.filter(params, &callback)
     @callbacks[:status] = callback
-    @client = Client.new
-    @client.stream filter_endpoint(params), @callbacks
+    @client = Client.new.tap { |c| c.stream filter_endpoint(params), @callbacks }
   end
 
   def self.stop
@@ -55,12 +53,10 @@ module Nervion
     def initialize(host = STREAM_API_HOST, port = 443)
       @host = host
       @port = port
-      @json_parser = Yajl::Parser.new(symbolize_keys: true)
-      @http_parser = HttpParser.new(@json_parser)
     end
 
     def stream(request, callbacks)
-      @stream_handler = StreamHandler.new(@http_parser, @json_parser, callbacks)
+      @stream_handler = StreamHandler.new(callbacks)
       EM.run { EM.connect @host, @port, Stream, request, @stream_handler }
     end
 

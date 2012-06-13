@@ -4,10 +4,9 @@ require 'nervion/http_parser'
 module Nervion
   class StreamHandler
 
-    def initialize(http_parser, json_parser, callbacks)
-      @http_parser, @json_parser = http_parser, json_parser
+    def initialize(callbacks)
       @callbacks = callbacks
-      json_parser.on_parse_complete = @callbacks[:status]
+      @http_parser = HttpParser.new(setup_json_parser)
     end
 
     def <<(data)
@@ -32,5 +31,12 @@ module Nervion
       @close_stream = true
     end
 
+    private
+
+    def setup_json_parser
+      Yajl::Parser.new(symbolize_keys: true).tap do |json_parser|
+        json_parser.on_parse_complete = @callbacks[:status]
+      end
+    end
   end
 end
