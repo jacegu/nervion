@@ -27,7 +27,7 @@ describe Nervion::ReconnectionScheduler do
     end
 
     it 'waits 10 seconds before reconnecting' do
-      EM.should_receive(:add_timer).with described_class::MIN_HTTP_ERROR_TIMEOUT
+      EM.should_receive(:add_timer).with  Nervion::HttpWaitCalculator::MIN_WAIT
       subject.reconnect_after_http_error_in stream
     end
 
@@ -38,11 +38,11 @@ describe Nervion::ReconnectionScheduler do
       end
     end
 
-    it 'raises a MaximumReconnectAttempts error' do
-      limit = described_class::RECONNECTION_LIMIT + 1
+    it 'raises an error after too many unsuccessful reconnects' do
+      limit = described_class::HTTP_ERROR_LIMIT + 1
       expect do
         limit.times { subject.reconnect_after_http_error_in stream }
-      end.to raise_error Nervion::ReconnectError
+      end.to raise_error Nervion::TooManyConnectionErrors
     end
   end
 
@@ -50,6 +50,34 @@ describe Nervion::ReconnectionScheduler do
     it 'tells the stream to reconnect' do
       stream.should_receive(:retry)
       subject.reconnect_after_network_error_in stream
+    end
+
+    it 'waits 250ms before reconnecting' do
+      EM.should_receive(:add_timer).with Nervion::NetworkWaitCalculator::MIN_WAIT
+      subject.reconnect_after_network_error_in stream
+    end
+
+    it 'increases the wait after network errors linearly up to 16 seconds' do
+      (0.25..16).step(0.25) do |wait|
+        EM.should_receive(:add_timer).with wait
+        subject.reconnect_after_network_error_in stream
+      end
+    end
+
+    it 'caps the wait after network errors at 16 seconds' do
+      number_of_errors = (16/0.25).to_i
+      number_of_errors.times { subject.reconnect_after_network_error_in stream }
+      (described_class::NETWORK_ERROR_LIMIT - number_of_errors - 1).times do
+        EM.should_receive(:add_timer).with(16)
+        subject.reconnect_after_network_error_in stream
+      end
+    end
+
+    it 'raises an error after too many unsuccessful reconnects' do
+      limit = described_class::NETWORK_ERROR_LIMIT + 1
+      expect do
+        limit.times { subject.reconnect_after_network_error_in stream }
+      end.to raise_error Nervion::TooManyConnectionErrors
     end
   end
 end

@@ -2,47 +2,77 @@ require 'eventmachine'
 
 module Nervion
   class ReconnectionScheduler
-    MIN_HTTP_ERROR_TIMEOUT = 10
-    MAX_HTTP_ERROR_TIMEOUT = 240
-
-    RECONNECTION_LIMIT = 10
-
-    TOO_MANY_HTTP_ERRORS = "There have been too many HTTP errors. This is probably a client configuration issue that has to be taken care of."
+    HTTP_ERROR_LIMIT    = 10
+    NETWORK_ERROR_LIMIT = 65
 
     def initialize
-      @http_error_count = 0
-      @http_error_timeout = MIN_HTTP_ERROR_TIMEOUT / 2
+      @http_errors = ErrorCounter.new(HTTP_ERROR_LIMIT)
+      @network_errors = ErrorCounter.new(NETWORK_ERROR_LIMIT)
+      @http_wait_calculator = HttpWaitCalculator.new
+      @network_wait_calculator = NetworkWaitCalculator.new
     end
 
     def reconnect_after_http_error_in(stream)
-      @http_error_count += 1
-      check_http_error_count
-      schedule_reconnect stream, delay_after_http_error
+      @http_errors.notify_error
+      delay = @http_wait_calculator.wait_for(@http_errors.count)
+      schedule_reconnect stream, delay
     end
 
     def reconnect_after_network_error_in(stream)
-      schedule_reconnect stream, 0.25
+      @network_errors.notify_error
+      delay = @network_wait_calculator.wait_for(@network_errors.count)
+      schedule_reconnect stream, delay
     end
 
     private
 
-    def check_http_error_count
-      raise ReconnectError, TOO_MANY_HTTP_ERRORS if too_many_reconnects?
-    end
-
     def schedule_reconnect(stream, seconds)
       EM.add_timer(seconds) { stream.retry }
     end
+  end
 
-    def delay_after_http_error
-      [@http_error_timeout *= 2, MAX_HTTP_ERROR_TIMEOUT].min
+  class ErrorCounter
+    attr_reader :count
+    def initialize(limit)
+      @count = 0
+      @limit = limit
     end
 
-    def too_many_reconnects?
-      @http_error_count >= RECONNECTION_LIMIT
+    def notify_error
+      @count += 1
+      raise TooManyConnectionErrors if @count >= @limit
     end
   end
 
-  class ReconnectError < Exception
+  class WaitCalculator
+    def initialize(max_wait, &calculator)
+      @max_wait = max_wait
+      @calculator = calculator
+    end
+
+    def wait_for(error_count)
+      [@calculator.call(error_count), @max_wait].min
+    end
+  end
+
+  class HttpWaitCalculator < WaitCalculator
+    MIN_WAIT = 10
+    MAX_WAIT = 240
+
+    def initialize
+      super(MAX_WAIT) { |error_count| MIN_WAIT * 2**(error_count - 1) }
+    end
+  end
+
+  class NetworkWaitCalculator < WaitCalculator
+    MIN_WAIT = 0.25
+    MAX_WAIT = 16
+
+    def initialize
+      super(MAX_WAIT) { |error_count| MIN_WAIT * error_count }
+    end
+  end
+
+  class TooManyConnectionErrors < Exception
   end
 end
