@@ -59,4 +59,12 @@ describe Nervion::Client do
     )
     subject.stream(request, callbacks)
   end
+
+  it 'stops the client' do
+    Nervion::StreamHandler.stub(:new).and_return(stream_handler)
+    stream_handler.should_receive(:close_stream).ordered
+    EM.should_receive(:stop).ordered
+    subject.stream(request, callbacks)
+    subject.stop
+  end
 end

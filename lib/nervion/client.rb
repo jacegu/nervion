@@ -20,14 +20,25 @@ module Nervion
     self
   end
 
+  def self.on_network_error(&callback)
+    @callbacks[:network_error] = callback
+    self
+  end
+
   def self.sample(params = {}, &callback)
     @callbacks[:status] = callback
-    Client.stream sample_endpoint(params), @callbacks
+    @client = Client.new
+    @client.stream sample_endpoint(params), @callbacks
   end
 
   def self.filter(params, &callback)
     @callbacks[:status] = callback
-    Client.stream filter_endpoint(params), @callbacks
+    @client = Client.new
+    @client.stream filter_endpoint(params), @callbacks
+  end
+
+  def self.stop
+    @client.stop
   end
 
   private
@@ -41,10 +52,6 @@ module Nervion
   end
 
   class Client
-    def self.stream(request, callbacks)
-      new.stream request, callbacks
-    end
-
     def initialize(host = STREAM_API_HOST, port = 443)
       @host = host
       @port = port
@@ -53,8 +60,13 @@ module Nervion
     end
 
     def stream(request, callbacks)
-      stream_handler = StreamHandler.new(@http_parser, @json_parser, callbacks)
-      EM.run { EM.connect @host, @port, Stream, request, stream_handler }
+      @stream_handler = StreamHandler.new(@http_parser, @json_parser, callbacks)
+      EM.run { EM.connect @host, @port, Stream, request, @stream_handler }
+    end
+
+    def stop
+      @stream_handler.close_stream
+      EM.stop
     end
   end
 end

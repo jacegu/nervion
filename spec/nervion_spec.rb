@@ -8,6 +8,7 @@ STREAM_FILE_PATH = File.join(File.dirname(__FILE__), 'fixtures/stream.txt')
 $statuses = []
 $http_error_status = ''
 $http_error_body = ''
+$network_error_occurred = false
 
 class TestClient < Nervion::Client
   def request_test_stream
@@ -18,13 +19,12 @@ class TestClient < Nervion::Client
     {
       status: ->(status){ $statuses << status },
       http_error: ->(status, body) do
-        STDERR.puts 'HTTP error occurred'
         $http_error_status, $http_error_body = status, body
-        EM.stop
+        stop
       end,
       network_error: -> do
-        STDERR.puts "Connection was lost at #{DateTime.now}"
-        EM.stop
+        $network_error_occurred = true
+        stop
       end
     }
   end
@@ -51,10 +51,16 @@ class TwitterStreamDouble < EM::Connection
   end
 end
 
-class TwitterStreamUnauthorizedDouble < TwitterStreamDouble
+class TwitterStreamHttpError < TwitterStreamDouble
   def receive_data(data)
     send_data RESPONSE_401
     close_connection_after_writing
+  end
+end
+
+class TwitterStreamNetworkError < TwitterStreamDouble
+  def receive_data(data)
+    close_connection
   end
 end
 
@@ -65,10 +71,14 @@ describe 'Receiving a stream' do
   end
 
   it 'calls callback on HTTP errors' do
-    pending 'until handling unexpected closed connections again'
-    run_server_and_client TwitterStreamUnauthorizedDouble
+    run_server_and_client TwitterStreamHttpError
     $http_error_status.should eq 401
     $http_error_body.should match /Unauthorized/
+  end
+
+  it 'calls callback on Network errors' do
+    run_server_and_client TwitterStreamNetworkError
+    $network_error_occurred.should be_true
   end
 
   def run_server_and_client(handler)
