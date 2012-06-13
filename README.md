@@ -154,9 +154,17 @@ Streaming API's response.
 
 #### Network Error callback
 
-**This callback will be provided soon**. Right now, in case of a problem with
-the network, Nervion will prompt a message and finish.
+This callback will be executed when the connection with the Twitter Stream API
+is unexpectedly closed.
 
+```ruby
+Nervion.on_network_error do
+  puts 'There was a connection error but Nervion will automatically reconnect'
+end
+```
+
+**Nervion will do nothing by default when network errors occurr** because it is
+unlikely that they are provoked by the client itself.
 
 
 ## EventMachine Integration
@@ -166,16 +174,16 @@ Nervion runs on the top of EventMachine.
 In the near future this `README` will provide a guideline to take advantage of
 the benefits that EventMachine can provide when used correctly.
 
-
-
 ## Roadmap
 
 There are some features that are needed and that will be developed before the first
 release of the gem:
 
-  - Adhere to the
-  [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)
-  - Provide a network error callback
+  - <del>Provide an HTTP error callback</del> *done!*
+  - <del>Provide a network error callback</del> *done!*
+  - <del>Adhere to the
+  [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)</del>
+  *done!*
   - Take advantage of EventMachine deferrables on callbacks
   - Rewrite and improve the DSL provided to setup Nervion
 
