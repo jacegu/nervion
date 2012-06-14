@@ -1,11 +1,8 @@
 require 'eventmachine'
 require 'nervion/client'
 
-describe 'Nervion Client DSL' do
-end
-
 describe Nervion::Client do
-  subject              { described_class.new }
+  subject              { described_class.new('http://twitter.com', 443) }
   let(:request)        { stub :request }
   let(:callbacks)      { stub :callbacks }
   let(:stream_handler) { stub :stream_handler }
@@ -30,15 +27,13 @@ describe Nervion::Client do
     end
   end
 
-  it 'setups the stream handler' do
-    Nervion::StreamHandler.should_receive(:new).with(callbacks)
-    subject.stream(request, callbacks)
+  before do
+    Nervion::StreamHandler.stub(:new).with(callbacks).and_return(stream_handler)
   end
 
-  it 'fires EventMachine and connects to the Streaming API' do
-    Nervion::StreamHandler.stub(:new).and_return(stream_handler)
+  it 'starts treaming' do
     EM.should_receive(:connect).with(
-      Nervion::STREAM_API_HOST,
+      'http://twitter.com',
       443,
       Nervion::Stream,
       request,
@@ -47,8 +42,7 @@ describe Nervion::Client do
     subject.stream(request, callbacks)
   end
 
-  it 'stops the client' do
-    Nervion::StreamHandler.stub(:new).and_return(stream_handler)
+  it 'stops streaming' do
     stream_handler.should_receive(:close_stream).ordered
     EM.should_receive(:stop).ordered
     subject.stream(request, callbacks)
