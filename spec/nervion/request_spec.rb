@@ -1,7 +1,7 @@
 require 'nervion/request'
 
 EXPECTED_GET_REQUEST = <<GET
-GET /endpoint HTTP/1.1\r
+GET /endpoint?p1=param%20value&p2=%24%26 HTTP/1.1\r
 Host: twitter.com\r
 Authorization: OAuth xxx\r\n\r
 GET
@@ -18,7 +18,7 @@ POST
 
 describe Nervion::Request do
   let(:uri)          { 'https://twitter.com:443/endpoint' }
-  let(:params)       { Hash.new }
+  let(:params)       { Hash[p1: 'param value', p2: '$&'] }
   let(:oauth_params) { Hash[param: 'value'] }
 
   shared_examples_for 'a request' do
@@ -41,10 +41,6 @@ describe Nervion::Request do
     it 'knows the port it will connect to' do
       subject.port.should eq 443
     end
-
-    it 'knows the path it points to' do
-      subject.path.should eq '/endpoint'
-    end
   end
 
   context 'GET' do
@@ -53,6 +49,16 @@ describe Nervion::Request do
     it 'has GET as http method' do
       subject.http_method.should eq 'GET'
     end
+
+    it 'knows the path it points to with no params' do
+      get_with_no_params = Nervion.get(uri, {}, oauth_params)
+      get_with_no_params.path.should eq '/endpoint'
+    end
+
+    it 'knows the path it points to with params' do
+      subject.path.should eq '/endpoint?p1=param%20value&p2=%24%26'
+    end
+
 
     it 'has an string representation' do
       Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
@@ -69,8 +75,11 @@ describe Nervion::Request do
       subject.http_method.should eq 'POST'
     end
 
+    it 'knows the path it points to' do
+      subject.path.should eq '/endpoint'
+    end
+
     it 'has an string representation' do
-      params = { p1: 'param value', p2: '$&' }
       post = Nervion.post(uri, params, oauth_params)
       Nervion::OAuthHeader.stub(:for).with(post).and_return 'OAuth xxx'
       post.to_s.should eq EXPECTED_POST_REQUEST

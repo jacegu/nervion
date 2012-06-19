@@ -10,13 +10,6 @@ module Nervion
   end
 
   module Request
-    HEADERS_FOR_COMPRESSED_STREAM = [
-      'Content-type: application/x-www-form-urlencoded',
-      'User-agent: nervion twitter streaming api client',
-      'Accept-encoding: deflate, gzip',
-      'Keep-alive: true'
-    ]
-
     attr_reader :params, :oauth_params
 
     def initialize(uri, params, oauth_params)
@@ -50,10 +43,24 @@ module Nervion
     def headers
       [ "Host: #{host}", "Authorization: #{OAuthHeader.for(self)}" ]
     end
+
+    def percent_encode(params)
+      params.map do |name, value|
+        "#{name.to_s}=#{PercentEncoder.encode(value.to_s)}"
+      end.join '&'
+    end
   end
 
   class Get
     include Request
+
+    def path
+      if params.any?
+        "#{super}?#{percent_encode(params)}"
+      else
+        super
+      end
+    end
 
     def to_s
       "#{request_line}\r\n#{headers.join("\r\n")}\r\n\r\n"
@@ -86,9 +93,7 @@ module Nervion
     end
 
     def body
-      params.map do |name, value|
-        "#{name.to_s}=#{PercentEncoder.encode(value.to_s)}"
-      end.join '&'
+      percent_encode params
     end
   end
 end
