@@ -33,7 +33,7 @@ Or install it yourself as:
 
 
 
-## Usage
+## Overview
 
 Nervion mimics the endpoints provided by the
 [Twitter Stream API](https://dev.twitter.com/docs/streaming-apis).
@@ -48,8 +48,7 @@ Specifically the two calls that are that are available to the broad audience:
 
 - [`follow`](https://dev.twitter.com/docs/api/1/post/statuses/filter)
 - [`sample`](https://dev.twitter.com/docs/api/1/get/statuses/sample)
-
-[`firehose`](https://dev.twitter.com/docs/api/1/get/statuses/firehose)
+- [`firehose`](https://dev.twitter.com/docs/api/1/get/statuses/firehose)
 is not supported yet since requires a special access level.
 
 Checkout the docs of both endpoints to know what tweets you can query the
@@ -72,7 +71,17 @@ Twitter.
 
 
 
-###Authentication
+### JSON Parsing
+
+**Nervion will parse the JSON returned by twitter for you**. It uses
+[Yajl](https://github.com/brianmario/yajl-ruby) as JSON parser for its out of
+the box support for JSON streams.
+
+**The hash keys are symbolized in the process of parsing**. You will always have
+to use symbols to fetch data in the callbacks.
+
+
+## Authentication
 
 Since Twitter plans to remove support for basic auth eventually, **Nervion only
 supports OAuth authentication**.
@@ -89,34 +98,17 @@ end
 ```
 
 
-###Parsing JSON
 
-**Nervion will parse the JSON returned by twitter for you**. It uses
-[Yajl](https://github.com/brianmario/yajl-ruby) as JSON parser for its out of
-the box support for JSON streams.
+## Callbacks
 
-**The hash keys are symbolized in the process of parsing**. You will always have
-to use symbols to fetch data in the callbacks.
+Nervion provides three callbacks:
 
-
-
-###Callbacks
-
-Nowdays Nervion only has one callback that acts upon the received statuses. It
-**will support callbacks on specific types of tweets and errors** in future
-versions.
-
-The callbacks will receive only one parameter: the hash with the symbolized keys
-resultant of the JSON parsing. You get to choose what to do with the hash:
-[mash](https://github.com/intridea/hashie) it before working with it or even
-wrap it in some object that specializes on querying the information that is
-relevant to you.
-
-To know what keys to expect you should browse the
-[*Platform Objects Documentation*](https://dev.twitter.com/docs/platform-objects/tweets).
+- **Status callback**: This callback will be called with every item of the stream
+- **HTTP error callback**: This callback is called when Twitter responds with a status above 200
+- **Network error callback**: This callback will be called when the connection to the stream is lost
 
 
-####Status Callback
+### Status Callback
 
 You can setup a callback that **acts on all the received statuses** by simply
 passing in a block to the API call you are making:
@@ -129,8 +121,17 @@ Be aware that **the callback will be called with any type of timeline update**
 (or even with warnings if the `stall_warnings` parameter is set to `true`. Keep
 this in mind when querying the hash.
 
+The callbacks will receive only one parameter: the hash with the symbolized keys
+resultant of the JSON parsing. You get to choose what to do with the hash:
+[mash](https://github.com/intridea/hashie) it before working with it or even
+wrap it in some object that specializes on querying the information that is
+relevant to you.
 
-#### HTTP Error Callback
+To know what keys to expect you should browse the
+[*Platform Objects Documentation*](https://dev.twitter.com/docs/platform-objects/tweets).
+
+
+### HTTP Error Callback
 
 This callback will be executed when the Streaming API sends a response with a
 status code above 200. After the callback has been executed a retry will be
@@ -152,7 +153,7 @@ error message to `STDERR` that contains both the status and the body of Twitter
 Streaming API's response.
 
 
-#### Network Error callback
+### Network Error callback
 
 This callback will be executed when the connection with the Twitter Stream API
 is unexpectedly closed.
@@ -166,6 +167,19 @@ end
 **Nervion will do nothing by default when network errors occurr** because it is
 unlikely that they are provoked by the client itself.
 
+### Callback chaining
+
+Callback setup can be chained like this:
+
+```ruby
+Nervion.on_network_error do
+  #do something about the error
+end.on_http_error do |status, body|
+  #do something about the error
+end.sample do |status|
+  #do something with the status
+end
+```
 
 ## EventMachine Integration
 
@@ -184,14 +198,6 @@ release of the gem:
   - <del>Adhere to the
   [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)</del>
   *done!*
-  - Take advantage of EventMachine deferrables on callbacks
-  - Rewrite and improve the DSL provided to setup Nervion
+  - Improve the DSL provided to setup Nervion to validate the client setup
 
-Once those basic features are provided there are a few more that will be very
-interesting to have:
-
-  - Use a gzip compressed stream
-  - Add callbacks to act on specific types of tweets: i.e. `on_retweet`,
-  `on_deleted_status`
-
-If people start using the client more features will be added.
+In the near future Nervion will use a gzip compressed stream
