@@ -5,9 +5,7 @@ require 'nervion/stream_handler'
 
 module Nervion
   class Client
-    STREAM_API_HOST = 'stream.twitter.com'
-
-    def initialize(host = STREAM_API_HOST, port = 443)
+    def initialize(host, port)
       @host = host
       @port = port
     end
