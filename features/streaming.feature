@@ -1,8 +1,7 @@
 Feature: Callbacks
 
   Background:
-    Given the Twitter Streaming API is up
-      And Nervion is connected to it
+    Given Nervion is connected to Twitter Streaming API
 
   Scenario: Calling the status callback
      When a status update is sent by Twitter
@@ -12,6 +11,6 @@ Feature: Callbacks
      When an HTTP error occurs
      Then Nervion calls the HTTP error callback
 
-  Scenario: Recovering from a network error
+  Scenario: Calling the network error callback
      When a network error occurs
      Then Nervion calls the network error callback

@@ -16,10 +16,7 @@ def test_client_with(server_version)
   end
 end
 
-Given /^the Twitter Streaming API is up$/ do
-end
-
-Given /^Nervion is connected to it$/ do
+Given /^Nervion is connected to Twitter Streaming API$/ do
   point_client_to_fake_server
 end
 
