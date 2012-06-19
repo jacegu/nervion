@@ -38,18 +38,17 @@ Or install it yourself as:
 Nervion mimics the endpoints provided by the
 [Twitter Stream API](https://dev.twitter.com/docs/streaming-apis).
 Currently it supports the
-[Public Streams](https://dev.twitter.com/docs/streaming-apis/streams/public).
-In the future we will add support for the
-[User Streams](https://dev.twitter.com/docs/streaming-apis/streams/user)
-and the
-[Site Streams](Use://dev.twitter.com/docs/streaming-apis/streams/site).
-
-Specifically the two calls that are that are available to the broad audience:
+[Public Streams](https://dev.twitter.com/docs/streaming-apis/streams/public):
 
 - [`follow`](https://dev.twitter.com/docs/api/1/post/statuses/filter)
 - [`sample`](https://dev.twitter.com/docs/api/1/get/statuses/sample)
 - [`firehose`](https://dev.twitter.com/docs/api/1/get/statuses/firehose)
 is not supported yet since requires a special access level.
+
+In the future we will add support for the
+[User Streams](https://dev.twitter.com/docs/streaming-apis/streams/user)
+and the
+[Site Streams](Use://dev.twitter.com/docs/streaming-apis/streams/site).
 
 Checkout the docs of both endpoints to know what tweets you can query the
 Streaming API for.
@@ -81,6 +80,7 @@ the box support for JSON streams.
 to use symbols to fetch data in the callbacks.
 
 
+
 ## Authentication
 
 Since Twitter plans to remove support for basic auth eventually, **Nervion only
@@ -103,9 +103,9 @@ end
 
 Nervion provides three callbacks:
 
-- **Status callback**: This callback will be called with every item of the stream
-- **HTTP error callback**: This callback is called when Twitter responds with a status above 200
-- **Network error callback**: This callback will be called when the connection to the stream is lost
+- **Status callback**: called when an item is received and parsed
+- **HTTP error callback**: called when Twitter responds with a status above 200
+- **Network error callback**: called when the connection to the stream is lost
 
 
 ### Status Callback
@@ -121,7 +121,7 @@ Be aware that **the callback will be called with any type of timeline update**
 (or even with warnings if the `stall_warnings` parameter is set to `true`. Keep
 this in mind when querying the hash.
 
-The callbacks will receive only one parameter: the hash with the symbolized keys
+The callback receives only one parameter: the hash with the symbolized keys
 resultant of the JSON parsing. You get to choose what to do with the hash:
 [mash](https://github.com/intridea/hashie) it before working with it or even
 wrap it in some object that specializes on querying the information that is
@@ -198,6 +198,8 @@ release of the gem:
   - <del>Adhere to the
   [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)</del>
   *done!*
-  - Improve the DSL provided to setup Nervion to validate the client setup
 
-In the near future Nervion will use a gzip compressed stream
+Future features will be:
+
+  - Improve the DSL provided to setup Nervion to validate the client setup
+  - Use a gzip compressed stream
