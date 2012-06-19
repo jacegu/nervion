@@ -20,4 +20,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'yajl-ruby', '~> 1.1.0'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'cucumber'
+  gem.add_development_dependency 'simplecov'
 end
