@@ -1,7 +1,6 @@
-$: << File.join(File.dirname(__FILE__), '..', '..', 'spec')
-
 require 'fixtures/responses'
-STREAM_FILE_PATH = File.join(File.dirname(__FILE__), '..', '..', 'spec', 'fixtures/stream.txt')
+
+STREAM_FILE_PATH = 'fixtures/stream.txt'
 
 class WorkingStreamingApiDouble < EM::Connection
   def post_init

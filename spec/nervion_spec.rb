@@ -1,9 +1,9 @@
 require 'eventmachine'
-require_relative '../lib/nervion/client'
+require 'nervion/client'
 require 'fixtures/responses'
 
 STATUS_COUNT = 100
-STREAM_FILE_PATH = File.join(File.dirname(__FILE__), 'fixtures/stream.txt')
+STREAM_FILE_PATH = 'fixtures/stream.txt'
 
 $statuses = []
 $http_error_status = ''
