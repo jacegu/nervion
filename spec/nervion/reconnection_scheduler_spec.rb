@@ -65,9 +65,10 @@ describe Nervion::ReconnectionScheduler do
     end
 
     it 'caps the wait after network errors at 16 seconds' do
-      number_of_errors = (16/0.25).to_i
-      number_of_errors.times { subject.reconnect_after_network_error_in stream }
-      (described_class::NETWORK_ERROR_LIMIT - number_of_errors - 1).times do
+      errors_to_cap = (16/0.25).to_i - 1
+      errors_to_limit = described_class::NETWORK_ERROR_LIMIT - errors_to_cap - 1
+      errors_to_cap.times { subject.reconnect_after_network_error_in stream }
+      errors_to_limit.times do
         EM.should_receive(:add_timer).with(16)
         subject.reconnect_after_network_error_in stream
       end
