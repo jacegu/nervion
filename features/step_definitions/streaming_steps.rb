@@ -1,3 +1,4 @@
+KNOWN_STATUS_COUNT = 100
 TEST_HOST = '0.0.0.0'
 TEST_PORT = '9000'
 
@@ -42,7 +43,7 @@ When /^a network error occurs$/ do
 end
 
 Then /^Nervion calls the status callback with it$/ do
-  @statuses.count.should eq 100
+  @statuses.count.should eq KNOWN_STATUS_COUNT
 end
 
 Then /^Nervion calls the HTTP error callback$/ do

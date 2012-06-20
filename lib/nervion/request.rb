@@ -1,4 +1,5 @@
 require_relative 'oauth_header'
+require_relative 'percent_encoder'
 
 module Nervion
   def self.get(uri, params = {}, oauth_params)
@@ -73,7 +74,6 @@ module Nervion
 
   class Post
     include Request
-    include PercentEncoder
 
     def to_s
       "#{request_line}\r\n#{headers.join("\r\n")}\r\n\r\n#{body}\r\n"
