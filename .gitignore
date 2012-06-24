@@ -1,4 +1,5 @@
-TODOs
 .DS_Store
-examples
+.yardoc
 coverage
+doc
+examples
