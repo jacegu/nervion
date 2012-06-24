@@ -45,32 +45,42 @@ describe "Facade that exposes Nervion's API" do
         and_return(client)
     end
 
-    context 'sample endpoint' do
+    shared_examples_for 'an endpoint' do
       it 'sets up the status callback' do
         callback_table.should_receive(:[]=).with(:status, status_callback)
-        Nervion.sample(&status_callback)
+        Nervion.send(method_name, params, &status_callback)
       end
 
       it 'starts the streaming to the sample endpoint' do
-        Nervion.stub(:get).with(Nervion::SAMPLE_ENDPOINT, params, config).
+        Nervion.stub(http_method).with(endpoint, params, config).
           and_return(request)
         client.should_receive(:stream).with(request, callback_table)
-        Nervion.sample(params, &status_callback)
+        Nervion.send(method_name, params, &status_callback)
       end
     end
 
-    context 'filter endpoint' do
-      it 'sets up the status callback' do
-        callback_table.should_receive(:[]=).with(:status, status_callback)
-        Nervion.filter(params, &status_callback)
-      end
+    context 'sample endpoint' do
+      let(:http_method) { :get }
+      let(:endpoint)    { Nervion::SAMPLE_ENDPOINT }
+      let(:method_name) { :sample }
 
-      it 'starts the streaming to the filter endpoint' do
-        Nervion.stub(:post).with(Nervion::FILTER_ENDPOINT, params, config).
-          and_return(request)
-        client.should_receive(:stream).with(request, callback_table)
-        Nervion.filter(params, &status_callback)
-      end
+      it_behaves_like 'an endpoint'
+    end
+
+    context 'filter endpoint' do
+      let(:http_method) { :post }
+      let(:endpoint)    { Nervion::FILTER_ENDPOINT }
+      let(:method_name) { :filter }
+
+      it_behaves_like 'an endpoint'
+    end
+
+    context 'firehose endpoint' do
+      let(:http_method) { :get }
+      let(:endpoint)    { Nervion::FIREHOSE_ENDPOINT }
+      let(:method_name) { :firehose }
+
+      it_behaves_like 'an endpoint'
     end
 
     context 'stoping' do
