@@ -8,7 +8,7 @@ module Nervion
   # Twitter's Streaming API has a status above 200).
   #
   # @param [Proc] callback the callback
-  # @returns [self] to allow callback setup chaining
+  # @return [self] to allow callback setup chaining
   def self.on_http_error(&callback)
     callback_table[:http_error] = callback
     self
@@ -18,7 +18,7 @@ module Nervion
   # disconnection.
   #
   # @param [Proc] callback the callback
-  # @returns [self] to allow callback setup chaining
+  # @return [self] to allow callback setup chaining
   def self.on_network_error(&callback)
     callback_table[:network_error] = callback
     self
@@ -43,7 +43,7 @@ module Nervion
   # Sets up the message callback and starts streaming the filter endpoint.
   #
   # @note At least one predicate parameter (follow, locations, or track) must be
-  # specified
+  #   specified.
   #
   # @see https://dev.twitter.com/docs/api/1/get/statuses/filter
   # @see https://dev.twitter.com/docs/streaming-apis/parameters#follow
