@@ -2,14 +2,6 @@ require_relative 'oauth_header'
 require_relative 'percent_encoder'
 
 module Nervion
-  def self.get(uri, params = {}, oauth_params)
-    Get.new uri, params, oauth_params
-  end
-
-  def self.post(uri, params = {}, oauth_params)
-    Post.new uri, params, oauth_params
-  end
-
   module Request
     attr_reader :params, :oauth_params
 
@@ -96,4 +88,15 @@ module Nervion
       percent_encode params
     end
   end
+
+  private
+
+  def self.get(uri, params = {}, oauth_params)
+    Get.new uri, params, oauth_params
+  end
+
+  def self.post(uri, params = {}, oauth_params)
+    Post.new uri, params, oauth_params
+  end
+
 end

@@ -4,34 +4,91 @@ require 'nervion/request'
 require 'nervion/configuration'
 
 module Nervion
-  STREAM_API_HOST   = 'stream.twitter.com'
-  STREAM_API_PORT   = 443
-  SAMPLE_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/sample.json"
-  FILTER_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/filter.json"
-  FIREHOSE_ENDPOINT = "https://#{STREAM_API_HOST}/1/statuses/firehose.json"
-
+  # Sets up the callback to be called upon HTTP errors (when the response from
+  # Twitter's Streaming API has a status above 200).
+  #
+  # @param [Proc] callback the callback
+  # @returns [self] to allow callback setup chaining
   def self.on_http_error(&callback)
     callback_table[:http_error] = callback
     self
   end
 
+  # Sets up the callback to be called upon network errors or unexpected
+  # disconnection.
+  #
+  # @param [Proc] callback the callback
+  # @returns [self] to allow callback setup chaining
   def self.on_network_error(&callback)
     callback_table[:network_error] = callback
     self
   end
 
+  # Sets up the message callback and starts streaming the sample endpoint.
+  #
+  # @see https://dev.twitter.com/docs/api/1/get/statuses/sample
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#delimited
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#stall_warnings
+  #
+  # @param [hash] params the parameters submitted to the sample endpoint
+  # @option params [Boolean] :delimited specifies whether messages should be
+  #   length-delimited.
+  # @option params [Boolean] :stall_warnings specifies whether stall warnings
+  #   should be delivered.
+  # @param [Proc] callback the callback
   def self.sample(params = {}, &callback)
     stream sample_endpoint(params), callback
   end
 
+  # Sets up the message callback and starts streaming the filter endpoint.
+  #
+  # @note At least one predicate parameter (follow, locations, or track) must be
+  # specified
+  #
+  # @see https://dev.twitter.com/docs/api/1/get/statuses/filter
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#follow
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#track
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#locations
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#delimited
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#stall_warnings
+  #
+  # @param [hash] params the parameters submitted to the sample endpoint
+  # @option params [String] :follow a comma separated list of user IDs,
+  #   indicating the users to return statuses for in the stream.
+  # @option params [String] :track keywords to track. Phrases of keywords are
+  #   specified by a comma-separated list.
+  # @option params [String] :locations Specifies a set of bounding boxes to track.
+  # @option params [Boolean] :delimited specifies whether messages should be
+  #   length-delimited.
+  # @option params [Boolean] :stall_warnings specifies whether stall warnings
+  #   should be delivered.
+  # @param [Proc] callback the callback
   def self.filter(params, &callback)
     stream filter_endpoint(params), callback
   end
 
+  # Sets up the message callback and starts streaming the firehose endpoint.
+  #
+  # @note This endpoint requires a special access level.
+  # @since 0.0.2
+  #
+  # @see https://dev.twitter.com/docs/api/1/get/statuses/firehose
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#count
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#delimited
+  # @see https://dev.twitter.com/docs/streaming-apis/parameters#stall_warnings
+  #
+  # @param [hash] params the parameters submitted to the sample endpoint
+  # @option params [Integer] :count the number of messages to backfill.
+  # @option params [Boolean] :delimited specifies whether messages should be
+  #   length-delimited.
+  # @option params [Boolean] :stall_warnings specifies whether stall warnings
+  #   should be delivered.
+  # @param [Proc] callback the callback
   def self.firehose(params = {}, &callback)
     stream firehose_endpoint(params), callback
   end
 
+  # Stops streaming
   def self.stop
     raise 'Nervion is not running' if @client.nil?
     @client.stop
@@ -64,4 +121,9 @@ module Nervion
     get FIREHOSE_ENDPOINT, params, Configuration
   end
 
+  STREAM_API_HOST   = 'stream.twitter.com'
+  STREAM_API_PORT   = 443
+  SAMPLE_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/sample.json"
+  FILTER_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/filter.json"
+  FIREHOSE_ENDPOINT = "https://#{STREAM_API_HOST}/1/statuses/firehose.json"
 end

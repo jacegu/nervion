@@ -59,7 +59,6 @@ describe Nervion::Request do
       subject.path.should eq '/endpoint?p1=param%20value&p2=%24%26'
     end
 
-
     it 'has an string representation' do
       Nervion::OAuthHeader.stub(:for).with(subject).and_return 'OAuth xxx'
       subject.to_s.should eq EXPECTED_GET_REQUEST
