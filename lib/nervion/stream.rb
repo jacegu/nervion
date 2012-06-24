@@ -1,5 +1,5 @@
 require 'eventmachine'
-require 'nervion/http_parser'
+require 'nervion/stream_parser'
 require 'nervion/reconnection_scheduler'
 
 module Nervion

@@ -3,7 +3,6 @@ require 'nervion/stream_handler'
 describe Nervion::StreamHandler do
   subject           { described_class.new callbacks }
   let(:http_parser) { mock(:http_parser).as_null_object }
-  let(:json_parser) { mock(:json_parser).as_null_object }
 
   let(:callbacks) do
     {
@@ -18,12 +17,11 @@ describe Nervion::StreamHandler do
   let(:network_error_callback) { mock(:network_error_callback).as_null_object }
 
   before do
-    Yajl::Parser.stub(:new).with(symbolize_keys: true).and_return(json_parser)
-    Nervion::HttpParser.stub(:new).with(json_parser).and_return(http_parser)
+    Nervion::StreamParser.stub(:new).and_return(http_parser)
   end
 
   it 'sets up the status received callback' do
-    json_parser.should_receive(:on_parse_complete=).with(status_callback)
+    http_parser.should_receive(:on_json_parsed=).with(status_callback)
     described_class.new callbacks
   end
 

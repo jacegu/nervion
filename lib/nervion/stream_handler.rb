@@ -1,34 +1,24 @@
-require 'yajl'
-require 'nervion/http_parser'
+require 'nervion/stream_parser'
 
 module Nervion
   class StreamHandler
-
-    def initialize(callbacks)
-      @callbacks = callbacks
-      @http_parser = HttpParser.new(setup_json_parser)
+    def initialize(callbacks, stream_parser = StreamParser.new)
+      @callbacks, @stream_parser = callbacks, stream_parser
+      @stream_parser.on_json_parsed = @callbacks[:status]
     end
 
     def <<(data)
-      @http_parser << data
+      @stream_parser << data
     end
 
     def handle_http_error(error)
-      @http_parser.reset!
+      @stream_parser.reset!
       @callbacks[:http_error].call(error.status, error.body)
     end
 
     def handle_network_error
-      @http_parser.reset!
+      @stream_parser.reset!
       @callbacks[:network_error].call
-    end
-
-    private
-
-    def setup_json_parser
-      Yajl::Parser.new(symbolize_keys: true).tap do |json_parser|
-        json_parser.on_parse_complete = @callbacks[:status]
-      end
     end
   end
 end

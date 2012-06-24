@@ -1,12 +1,18 @@
+require 'yajl'
 require 'http/parser'
 
 module Nervion
-  class HttpParser
+  class StreamParser
     attr_reader :json_parser, :http_parser
 
-    def initialize(json_parser)
-      @json_parser = json_parser
-      @http_parser = setup_http_parser
+    def initialize(parsers = {})
+      @http_parser = parsers[:http_parser] || Http::Parser.new
+      @json_parser = parsers[:json_parser] || Yajl::Parser.new(symbolize_keys: true)
+      @http_parser.on_body = method(:process)
+    end
+
+    def on_json_parsed=(callback)
+      @json_parser.on_parse_complete = callback
     end
 
     def <<(http_stream)
@@ -18,10 +24,6 @@ module Nervion
     end
 
     private
-
-    def setup_http_parser
-      Http::Parser.new.tap { |parser| parser.on_body = method(:process) }
-    end
 
     def process(chunk)
       if request_successful?
