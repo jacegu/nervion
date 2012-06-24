@@ -1,5 +1,3 @@
-require 'nervion/configuration'
-require 'nervion/request'
 require 'nervion/stream'
 require 'nervion/stream_handler'
 
@@ -11,12 +9,12 @@ module Nervion
     end
 
     def stream(request, callbacks)
-      @stream_handler = StreamHandler.new(callbacks)
-      EM.run { EM.connect @host, @port, Stream, request, @stream_handler }
+      handler = StreamHandler.new(callbacks)
+      EM.run { @stream = EM.connect @host, @port, Stream, request, handler }
     end
 
     def stop
-      @stream_handler.close_stream
+      @stream.close
       EM.stop
     end
   end

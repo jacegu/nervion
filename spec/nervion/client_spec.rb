@@ -5,6 +5,7 @@ describe Nervion::Client do
   subject              { described_class.new('http://twitter.com', 443) }
   let(:request)        { stub :request }
   let(:callbacks)      { stub :callbacks }
+  let(:stream)         { mock :stream }
   let(:stream_handler) { stub :stream_handler }
 
   before(:all) do
@@ -43,7 +44,8 @@ describe Nervion::Client do
   end
 
   it 'stops streaming' do
-    stream_handler.should_receive(:close_stream).ordered
+    EM.stub(:connect).and_return(stream)
+    stream.should_receive(:close).ordered
     EM.should_receive(:stop).ordered
     subject.stream(request, callbacks)
     subject.stop

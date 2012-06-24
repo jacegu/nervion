@@ -33,12 +33,6 @@ describe Nervion::StreamHandler do
     subject << data
   end
 
-  it 'can be told to close the stream' do
-    subject.stream_close_requested?.should be_false
-    subject.close_stream
-    subject.stream_close_requested?.should be_true
-  end
-
   context 'handling HTTP errors' do
     let(:http_error) { stub(:http_error, status: 401, body: 'Unauthorized') }
 

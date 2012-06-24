@@ -23,14 +23,6 @@ module Nervion
       @callbacks[:network_error].call
     end
 
-    def stream_close_requested?
-      @close_stream ||= false
-    end
-
-    def close_stream
-      @close_stream = true
-    end
-
     private
 
     def setup_json_parser
