@@ -16,9 +16,6 @@ this.
 
 ## Installation
 
-**WARNING: This project hasn't been released as a Gem yet**. This is here for
-future reference.
-
 Add this line to your application's Gemfile:
 
     gem 'nervion'
