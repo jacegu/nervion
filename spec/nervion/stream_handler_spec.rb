@@ -6,13 +6,13 @@ describe Nervion::StreamHandler do
 
   let(:callbacks) do
     {
-      status:        status_callback,
+      message:       message_callback,
       http_error:    http_error_callback,
       network_error: network_error_callback
     }
   end
 
-  let(:status_callback)        { mock :status_callback }
+  let(:message_callback)       { mock :message_callback }
   let(:http_error_callback)    { mock(:http_error_callback).as_null_object }
   let(:network_error_callback) { mock(:network_error_callback).as_null_object }
 
@@ -20,8 +20,8 @@ describe Nervion::StreamHandler do
     Nervion::StreamParser.stub(:new).and_return(http_parser)
   end
 
-  it 'sets up the status received callback' do
-    http_parser.should_receive(:on_json_parsed=).with(status_callback)
+  it 'sets up the message received callback' do
+    http_parser.should_receive(:on_json_parsed=).with(message_callback)
     described_class.new callbacks
   end
 

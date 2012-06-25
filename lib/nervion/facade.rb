@@ -101,7 +101,7 @@ module Nervion
   end
 
   def self.stream(endpoint, callback)
-    callback_table[:status] = callback
+    callback_table[:message] = callback
     new_client.tap { |c| c.stream endpoint, callback_table }
   end
 

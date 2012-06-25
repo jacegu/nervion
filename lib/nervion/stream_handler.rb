@@ -4,7 +4,7 @@ module Nervion
   class StreamHandler
     def initialize(callbacks, stream_parser = StreamParser.new)
       @callbacks, @stream_parser = callbacks, stream_parser
-      @stream_parser.on_json_parsed = @callbacks[:status]
+      @stream_parser.on_json_parsed = @callbacks[:message]
     end
 
     def <<(data)

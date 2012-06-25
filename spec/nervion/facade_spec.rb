@@ -2,7 +2,7 @@ require 'nervion/facade'
 
 describe "Facade that exposes Nervion's API" do
   let(:callback_table)   { mock(:callback_table).as_null_object }
-  let(:status_callback)  { lambda { :status_callback } }
+  let(:message_callback)  { lambda { :message_callback } }
   let(:http_callback)    { lambda { :http_error_callback } }
   let(:network_callback) { lambda { :network_error_callback } }
 
@@ -46,16 +46,16 @@ describe "Facade that exposes Nervion's API" do
     end
 
     shared_examples_for 'an endpoint' do
-      it 'sets up the status callback' do
-        callback_table.should_receive(:[]=).with(:status, status_callback)
-        Nervion.send(method_name, params, &status_callback)
+      it 'sets up the message callback' do
+        callback_table.should_receive(:[]=).with(:message, message_callback)
+        Nervion.send(method_name, params, &message_callback)
       end
 
       it 'starts the streaming to the sample endpoint' do
         Nervion.stub(http_method).with(endpoint, params, config).
           and_return(request)
         client.should_receive(:stream).with(request, callback_table)
-        Nervion.send(method_name, params, &status_callback)
+        Nervion.send(method_name, params, &message_callback)
       end
     end
 
