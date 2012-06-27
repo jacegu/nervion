@@ -1,5 +1,7 @@
 require 'nervion/facade'
 
+class Callable; def call; end; end;
+
 describe "Facade that exposes Nervion's API" do
   let(:callback_table)   { mock(:callback_table).as_null_object }
   let(:message_callback)  { lambda { :message_callback } }
@@ -65,6 +67,10 @@ describe "Facade that exposes Nervion's API" do
           Nervion.send(method_name, params, &message_callback)
         end.to raise_error
       end
+
+      it 'raises an error if no message callback was provided' do
+        expect { Nervion.send(method_name, params) }.to raise_error
+      end
     end
 
     context 'sample endpoint' do
@@ -94,7 +100,7 @@ describe "Facade that exposes Nervion's API" do
     context 'stoping' do
       it 'can stop the streaming' do
         client.should_receive(:stop)
-        Nervion.sample(->{})
+        Nervion.sample{}
         Nervion.stop
       end
 

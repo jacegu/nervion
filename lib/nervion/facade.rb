@@ -102,6 +102,7 @@ module Nervion
 
   def self.stream(endpoint, callback)
     raise_not_configured_error unless Configuration.configured?
+    raise_no_message_callback_error if callback.nil?
     callback_table[:message] = callback
     new_client.tap { |c| c.stream endpoint, callback_table }
   end
@@ -126,6 +127,10 @@ module Nervion
     raise "You need to setup the authentication information for Nervion to work.\nPlease, check out #{AUTHENTICATION_README_URL}"
   end
 
+  def self.raise_no_message_callback_error
+    raise "You have to setup a message callback.\nPlease, check out #{MSG_CALLBACK_README_URL}"
+  end
+
   STREAM_API_HOST   = 'stream.twitter.com'
   STREAM_API_PORT   = 443
   SAMPLE_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/sample.json"
@@ -133,5 +138,6 @@ module Nervion
   FIREHOSE_ENDPOINT = "https://#{STREAM_API_HOST}/1/statuses/firehose.json"
 
   AUTHENTICATION_README_URL = 'https://github.com/jacegu/nervion#authentication'
+  MSG_CALLBACK_README_URL   = 'https://github.com/jacegu/nervion#message-callback'
 
 end
