@@ -1,7 +1,8 @@
 Feature: Callbacks
 
   Background:
-    Given Nervion is connected to Twitter Streaming API
+    Given Nervion has been configured
+      And Nervion is connected to Twitter Streaming API
 
   Scenario: Calling the status callback
      When a status update is sent by Twitter

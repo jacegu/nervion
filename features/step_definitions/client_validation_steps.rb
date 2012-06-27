@@ -8,7 +8,6 @@ When /^I try to start streaming$/ do
   begin
     Nervion.sample { |status| puts status }
   rescue Exception => error
-    puts error
     @error = error
   end
 end

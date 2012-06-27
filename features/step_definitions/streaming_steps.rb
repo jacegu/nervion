@@ -17,8 +17,16 @@ def test_client_with(server_version)
   end
 end
 
+Given /^Nervion has been configured$/ do
+  Nervion.configure do |config|
+    config.consumer_key        = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    config.consumer_secret     = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    config.access_token        = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    config.access_token_secret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  end
+end
+
 Given /^Nervion is connected to Twitter Streaming API$/ do
-  Nervion.configure { |config| }
   point_client_to_fake_server
 end
 
