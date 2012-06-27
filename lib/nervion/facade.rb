@@ -124,11 +124,11 @@ module Nervion
   end
 
   def self.raise_not_configured_error
-    raise "You need to setup the authentication information for Nervion to work.\nPlease, check out #{AUTHENTICATION_README_URL}"
+    raise "You need to setup the authentication information for Nervion to work. Please, check out #{AUTHENTICATION_README_URL}"
   end
 
   def self.raise_no_message_callback_error
-    raise "You have to setup a message callback.\nPlease, check out #{MSG_CALLBACK_README_URL}"
+    raise "You have to setup a message callback. Please, check out #{MSG_CALLBACK_README_URL}"
   end
 
   STREAM_API_HOST   = 'stream.twitter.com'
