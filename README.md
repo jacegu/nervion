@@ -97,7 +97,7 @@ Nervion provides three callbacks:
 
 ### Message Callback
 
-You can setup a callback that **acts on all the received messages** by simply
+You must setup a callback that **acts on all the received messages** by simply
 passing in a block to the API call you are making:
 
 ```ruby
