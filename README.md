@@ -66,9 +66,9 @@ You can provide the tokens and secrets in a configuration flavour:
 
 ```ruby
 Nervion.configure do |config|
-  config.consumer_key =  'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-  config.consumer_secret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-  config.access_token = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  config.consumer_key        = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  config.consumer_secret     = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  config.access_token        = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   config.access_token_secret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 end
 ```
@@ -182,6 +182,8 @@ Nervion runs on the top of EventMachine.
 In the near future this `README` will provide a guideline to take advantage of
 the benefits that EventMachine can provide when used correctly.
 
+
+
 ## Roadmap
 
 There are some features that are needed and that will be developed before the first
@@ -192,8 +194,12 @@ release of the gem:
   - <del>Adhere to the
   [Twitter Connection guidelines](https://dev.twitter.com/docs/streaming-api/concepts#connecting)</del>
   *done!*
+  - <del>Improve the DSL provided to setup Nervion to validate the client
+  setup</del> *done!*
 
 Future features will be:
 
-  - Improve the DSL provided to setup Nervion to validate the client setup
   - Use a gzip compressed stream
+  - Be able to configure the client to skip parsing and yield bare Strings with
+  the JSON of the streamed messages. The objective is to improve performance by
+  parsing in other process.

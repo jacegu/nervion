@@ -1,6 +1,7 @@
 # version 0.0.2
 
 - Support for firehose endpoint
+- Validate client setup before start streaming
 
 # version 0.0.1
 
