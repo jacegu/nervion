@@ -36,6 +36,7 @@ GEM
       simplecov-html (~> 0.5.3)
     simplecov-html (0.5.3)
     yajl-ruby (1.1.0)
+    yard (0.8.2.1)
 
 PLATFORMS
   ruby
@@ -46,3 +47,4 @@ DEPENDENCIES
   rake
   rspec
   simplecov
+  yard
