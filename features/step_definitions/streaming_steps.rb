@@ -18,6 +18,7 @@ def test_client_with(server_version)
 end
 
 Given /^Nervion is connected to Twitter Streaming API$/ do
+  Nervion.configure { |config| }
   point_client_to_fake_server
 end
 

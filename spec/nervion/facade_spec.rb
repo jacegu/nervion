@@ -40,6 +40,7 @@ describe "Facade that exposes Nervion's API" do
     let(:request) { stub :request }
 
     before do
+      Nervion.configure { |config| }
       Nervion::Client.stub(:new).
         with(Nervion::STREAM_API_HOST, Nervion::STREAM_API_PORT).
         and_return(client)
@@ -56,6 +57,13 @@ describe "Facade that exposes Nervion's API" do
           and_return(request)
         client.should_receive(:stream).with(request, callback_table)
         Nervion.send(method_name, params, &message_callback)
+      end
+
+      it 'raises an error if Nervion was not configured' do
+        expect do
+          Nervion::Configuration.instance_variable_set(:@configured, nil)
+          Nervion.send(method_name, params, &message_callback)
+        end.to raise_error
       end
     end
 

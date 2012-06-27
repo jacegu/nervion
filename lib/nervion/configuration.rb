@@ -4,6 +4,7 @@ module Nervion
   #
   # @yieldparam [Configuration] config the configuration object.
   def self.configure
+    Configuration.configured!
     yield Configuration
   end
 
@@ -60,6 +61,14 @@ module Nervion
 
     def self.fetch(setting)
       send setting.to_sym
+    end
+
+    def self.configured?
+      @configured
+    end
+
+    def self.configured!
+      @configured = true
     end
   end
 end

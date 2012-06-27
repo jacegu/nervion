@@ -2,9 +2,23 @@ require 'nervion/configuration'
 
 describe Nervion::Configuration do
 
+  before do
+    %w{
+      consumer_key consumer_secret access_token access_token_secret configured
+    }.each do |variable|
+      described_class.instance_variable_set "@#{variable}", nil
+    end
+  end
+
   it 'allows configuration from the top level' do
     Nervion::Configuration.should_receive(:access_key=).with 'access_key'
     Nervion.configure { |config| config.access_key = 'access_key' }
+  end
+
+  it 'knows if Nervion has been configured' do
+    Nervion::Configuration.should_not be_configured
+    Nervion.configure { |config| }
+    Nervion::Configuration.should be_configured
   end
 
   context 'when it has not been configured' do
