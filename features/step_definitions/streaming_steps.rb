@@ -13,7 +13,7 @@ def test_client_with(server_version)
   EM.run do
     EM.start_server(TEST_HOST, TEST_PORT, server_version)
     EM.add_timer(0)   { Nervion.sample { |status| @statuses << status } }
-    EM.add_timer(0.1) { EM.stop }
+    EM.add_timer(0.3) { EM.stop }
   end
 end
 
