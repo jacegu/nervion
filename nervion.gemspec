@@ -4,7 +4,7 @@ require File.expand_path('../lib/nervion/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Javier Acero"]
   gem.email         = ["j4cegu@gmail.com"]
-  gem.description   = %q{A minimalistic Twitter Stream API Ruby client}
+  gem.description   = %q{A minimalistic Ruby client for the Public Streams of Twitter Streaming API}
   gem.summary       = %q{}
   gem.homepage      = "https://github.com/jacegu/nervion"
 
