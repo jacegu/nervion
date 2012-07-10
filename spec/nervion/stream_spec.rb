@@ -48,6 +48,7 @@ describe Nervion::Stream do
 
   it 'can be closed' do
     subject.close_requested?.should be_false
+    subject.should_receive(:close_connection)
     subject.close
     subject.close_requested?.should be_true
   end
@@ -91,6 +92,7 @@ describe Nervion::Stream do
         handler.should_not_receive(:handle_network_error)
         scheduler.should_not_receive(:reconnect_after_http_error_in)
         scheduler.should_not_receive(:reconnect_after_network_error_in)
+        subject.stub(:close_connection)
         subject.close
         subject.unbind
       end

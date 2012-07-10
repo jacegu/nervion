@@ -46,6 +46,7 @@ module Nervion
 
     def close
       @close_stream = true
+      close_connection
     end
 
     private
