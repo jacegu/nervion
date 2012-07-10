@@ -88,10 +88,16 @@ module Nervion
     stream firehose_endpoint(params), callback
   end
 
-  # Stops streaming
+  # Stops streaming and stops EventMachine's event loop
   def self.stop
-    raise 'Nervion is not running' if @client.nil?
+    check_for_running_client
     @client.stop
+  end
+
+  # Stops streaming but keeps EventMachine's event loop running
+  def self.close_stream
+    check_for_running_client
+    @client.close_stream
   end
 
   private
@@ -129,6 +135,10 @@ module Nervion
 
   def self.raise_no_message_callback_error
     raise "You have to setup a message callback. Please, check out #{MSG_CALLBACK_README_URL}"
+  end
+
+  def self.check_for_running_client
+    raise 'Nervion is not running' if @client.nil?
   end
 
   STREAM_API_HOST   = 'stream.twitter.com'

@@ -98,7 +98,7 @@ describe "Facade that exposes Nervion's API" do
     end
 
     context 'stoping' do
-      it 'can stop the streaming' do
+      it 'stops the client and the event loop' do
         client.should_receive(:stop)
         Nervion.sample{}
         Nervion.stop
@@ -109,6 +109,20 @@ describe "Facade that exposes Nervion's API" do
         expect { Nervion.stop }.to raise_error
       end
     end
+
+    context 'closing the stream' do
+      it 'closes the stream but keeps the event loop running' do
+        client.should_receive(:close_stream)
+        Nervion.sample{}
+        Nervion.close_stream
+      end
+
+      it 'raises an error if it is not streaming' do
+        Nervion.instance_variable_set(:@client, nil)
+        expect { Nervion.close_stream }.to raise_error
+      end
+    end
+
   end
 
 end
