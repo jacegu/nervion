@@ -14,8 +14,12 @@ module Nervion
     end
 
     def stop
-      @stream.close
+      close_stream
       EM.stop
+    end
+
+    def close_stream
+      @stream.close
     end
   end
 end

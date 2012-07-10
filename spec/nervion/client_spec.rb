@@ -43,11 +43,19 @@ describe Nervion::Client do
     subject.stream(request, callbacks)
   end
 
-  it 'stops streaming' do
+  it 'closes the stream and stops the event loop' do
     EM.stub(:connect).and_return(stream)
     stream.should_receive(:close).ordered
     EM.should_receive(:stop).ordered
     subject.stream(request, callbacks)
     subject.stop
+  end
+
+  it 'closes the stream' do
+    EM.stub(:connect).and_return(stream)
+    stream.should_receive(:close)
+    EM.should_not_receive(:stop)
+    subject.stream(request, callbacks)
+    subject.close_stream
   end
 end
