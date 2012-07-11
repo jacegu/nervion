@@ -1,3 +1,8 @@
+# version 0.0.4
+
+- Nervion won't raise an exception if you try to stop it and it wasn't running
+- Added `running?` method to check whether Nervion is running or not
+
 # version 0.0.3
 
 - Allow Nervion to run without being responsible for EventMachine's event loop

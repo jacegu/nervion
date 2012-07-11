@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Javier Acero"]
   gem.email         = ["j4cegu@gmail.com"]
   gem.description   = %q{A minimalistic Ruby client for the Public Streams of Twitter Streaming API}
-  gem.summary       = %q{}
+  gem.summary       = %q{Nervions is an easy tool and lightweight tool for consuming Twitter's Public Streams with an API that mimics the provided endpoints}
   gem.homepage      = "https://github.com/jacegu/nervion"
 
   gem.files         = `git ls-files`.split($\)
