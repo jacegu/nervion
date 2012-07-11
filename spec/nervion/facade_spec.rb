@@ -1,10 +1,8 @@
 require 'nervion/facade'
 
-class Callable; def call; end; end;
-
 describe "Facade that exposes Nervion's API" do
   let(:callback_table)   { mock(:callback_table).as_null_object }
-  let(:message_callback)  { lambda { :message_callback } }
+  let(:message_callback) { lambda { :message_callback } }
   let(:http_callback)    { lambda { :http_error_callback } }
   let(:network_callback) { lambda { :network_error_callback } }
 
@@ -97,32 +95,17 @@ describe "Facade that exposes Nervion's API" do
       it_behaves_like 'an endpoint'
     end
 
-    context 'stoping' do
-      it 'stops the client and the event loop' do
-        client.should_receive(:stop)
-        Nervion.sample{}
-        Nervion.stop
-      end
-
-      it 'raises an error if it is not streaming' do
-        Nervion.instance_variable_set(:@client, nil)
-        expect { Nervion.stop }.to raise_error
-      end
+    it 'stops the client and the event loop' do
+      client.should_receive(:stop)
+      Nervion.sample{}
+      Nervion.stop
     end
 
-    context 'closing the stream' do
-      it 'closes the stream but keeps the event loop running' do
-        client.should_receive(:close_stream)
-        Nervion.sample{}
-        Nervion.close_stream
-      end
-
-      it 'raises an error if it is not streaming' do
-        Nervion.instance_variable_set(:@client, nil)
-        expect { Nervion.close_stream }.to raise_error
-      end
+    it 'closes the stream but keeps the event loop running' do
+      client.should_receive(:close_stream)
+      Nervion.sample{}
+      Nervion.close_stream
     end
 
   end
-
 end

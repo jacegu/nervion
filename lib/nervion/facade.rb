@@ -90,13 +90,11 @@ module Nervion
 
   # Stops streaming and stops EventMachine's event loop
   def self.stop
-    check_for_running_client
     @client.stop
   end
 
   # Stops streaming but keeps EventMachine's event loop running
   def self.close_stream
-    check_for_running_client
     @client.close_stream
   end
 
@@ -137,10 +135,6 @@ module Nervion
     raise "You have to setup a message callback. Please, check out #{MSG_CALLBACK_README_URL}"
   end
 
-  def self.check_for_running_client
-    raise 'Nervion is not running' if @client.nil?
-  end
-
   STREAM_API_HOST   = 'stream.twitter.com'
   STREAM_API_PORT   = 443
   SAMPLE_ENDPOINT   = "https://#{STREAM_API_HOST}/1/statuses/sample.json"
@@ -149,5 +143,4 @@ module Nervion
 
   AUTHENTICATION_README_URL = 'https://github.com/jacegu/nervion#authentication'
   MSG_CALLBACK_README_URL   = 'https://github.com/jacegu/nervion#message-callback'
-
 end
