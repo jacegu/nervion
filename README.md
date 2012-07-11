@@ -27,6 +27,12 @@ Or install it yourself as:
 
 ## Overview
 
+**Nervion's API has a static look**. Given that Twitter only allows one
+connection per client to the Public Streams there is no need for you to
+build and handle a `Nervion::Client`. Nervion does that for you.
+You only need to set up the authentication and call the endpoint you are
+interested in.
+
 Nervion mimics the endpoints provided by the
 [Twitter Stream API](https://dev.twitter.com/docs/streaming-apis)
 through the following methods:
