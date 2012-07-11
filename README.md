@@ -177,10 +177,42 @@ end
 
 ## EventMachine Integration
 
-Nervion runs on the top of EventMachine.
+Nervion runs on the top of EventMachine. This means that you can take advantage
+of any of the features of the EventMachine ecosystem in your Nervion callbacks.
 
-In the near future this `README` will provide a guideline to take advantage of
-the benefits that EventMachine can provide when used correctly.
+Nervion can be run insinde an instance of EventMachine that is already running
+or you can let Nervion handle the event loop for you.
+
+With that purpose in mind Nervion provides a few handy methods:
+
+### stop
+
+The `stop` method will stop both the streaming and EventMachine.
+
+```ruby
+  Nervion.stop
+```
+
+### close_stream
+
+You can use `close_stream` to close the connection to the streaming API but
+keep EventMachine's event loop running.
+
+```ruby
+  Nervion.close_stream
+```
+
+### running?
+
+The `running?` method will allow you to check whether Nervion is already
+running or not, what, in the asyncronous land that EventMachine lives in, you
+may not be sure about.
+
+```ruby
+  Nervion.running?
+```
+
+And remember **do not block the event loop**.
 
 
 
