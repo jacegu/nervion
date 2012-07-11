@@ -3,6 +3,6 @@
 .yardoc
 coverage
 doc
-examples
+examples_with_keys
 Gemfile.lock
 pkg
