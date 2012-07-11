@@ -98,6 +98,11 @@ module Nervion
     @client.close_stream
   end
 
+  # @return [boolean] whether Nervion is running or not
+  def self.running?
+    not @client.nil?
+  end
+
   private
 
   def self.callback_table

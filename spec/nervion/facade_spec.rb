@@ -107,5 +107,11 @@ describe "Facade that exposes Nervion's API" do
       Nervion.close_stream
     end
 
+    it 'knows if Nervion is running' do
+      Nervion.instance_variable_set('@client', nil)
+      Nervion.should_not be_running
+      Nervion.sample{}
+      Nervion.should be_running
+    end
   end
 end
