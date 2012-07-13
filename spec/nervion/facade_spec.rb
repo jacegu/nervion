@@ -95,23 +95,36 @@ describe "Facade that exposes Nervion's API" do
       it_behaves_like 'an endpoint'
     end
 
-    it 'stops the client and the event loop' do
-      client.should_receive(:stop)
-      Nervion.sample{}
-      Nervion.stop
-    end
+    context 'client handling' do
+      before { Nervion.instance_variable_set('@client', nil) }
 
-    it 'closes the stream but keeps the event loop running' do
-      client.should_receive(:close_stream)
-      Nervion.sample{}
-      Nervion.close_stream
-    end
+      it 'stops the client and the event loop' do
+        client.should_receive(:stop)
+        Nervion.sample{}
+        Nervion.stop
+      end
 
-    it 'knows if Nervion is running' do
-      Nervion.instance_variable_set('@client', nil)
-      Nervion.should_not be_running
-      Nervion.sample{}
-      Nervion.should be_running
+      it 'does not try to stop the client if it is not running' do
+        client.should_not_receive(:stop)
+        Nervion.stop
+      end
+
+      it 'closes the stream but keeps the event loop running' do
+        client.should_receive(:close_stream)
+        Nervion.sample{}
+        Nervion.close_stream
+      end
+
+      it 'does not try to close the stream if it is not open' do
+        client.should_not_receive(:close_stream)
+        Nervion.close_stream
+      end
+
+      it 'knows if Nervion is running' do
+        Nervion.should_not be_running
+        Nervion.sample{}
+        Nervion.should be_running
+      end
     end
   end
 end

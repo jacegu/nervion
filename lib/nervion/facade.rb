@@ -90,12 +90,12 @@ module Nervion
 
   # Stops streaming and stops EventMachine's event loop
   def self.stop
-    @client.stop
+    @client.stop if running?
   end
 
   # Stops streaming but keeps EventMachine's event loop running
   def self.close_stream
-    @client.close_stream
+    @client.close_stream if running?
   end
 
   # @return [boolean] whether Nervion is running or not
