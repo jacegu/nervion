@@ -1,4 +1,5 @@
 # Nervion [![Build Status](https://secure.travis-ci.org/jacegu/nervion.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/jacegu/nervion.png?travis)][gemnasium]
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jacegu/nervion)
 
 **A minimalistic Ruby client for the
 [Public Streams](https://dev.twitter.com/docs/streaming-apis/streams/public)
